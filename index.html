@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Einstein's Temporal Laboratory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts for Love Story View & Myanmar Vintage Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Noto+Serif+Myanmar:wght@600;700&family=Padauk:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Swiper & Kokomi for 3D Music Player -->
+    <script src='https://unpkg.com/swiper@11/swiper-element-bundle.min.js'></script>
+    <script src='https://unpkg.com/kokomi.js/build/kokomi.umd.js'></script>
+    <!-- Three.js legacy non-module build + OrbitControls (r128) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div class="time-machine" aria-label="Time travel from 14, 2004 to 14, 2026">
+      <div class="time-machine__label">EINSTEIN'S TEMPORAL LABORATORY</div>
+
+      <!-- ပထမဆုံးနေရာရှိ 3x3 ဓာတ်ပုံဇယားကွက် (ဘောင်ပါ Fade Out ဖြစ်မည်) နှင့် "၂၂ နှစ်ပြည့် မွေးနေ့ ဆုတောင်းများ" စာသား -->
+      <div class="photo-stage">
+        <div class="photo-matrix-wrapper" id="photoMatrixWrapper">
+          <div class="photo-matrix" id="photoMatrix" aria-label="Memory Photo Matrix"></div>
+        </div>
+        <div class="birthday-reveal" id="birthdayReveal" aria-live="polite">
+          <div class="birthday-reveal__ornament">✦ 14 · 2004 — 14 · 2026 ✦</div>
+          <div class="birthday-reveal__title">၂၂ နှစ်ပြည့် မွေးနေ့<br>ဆုတောင်းများ</div>
+          <div class="birthday-reveal__ornament">✦ ──────── ✦</div>
+        </div>
+      </div>
+
+      <div class="clock" id="clock" aria-hidden="true">
+        <div class="clock__ticks"></div>
+        <div class="clock__numerals">
+          <span>12</span><span>1</span><span>2</span><span>3</span>
+          <span>4</span><span>5</span><span>6</span><span>7</span>
+          <span>8</span><span>9</span><span>10</span><span>11</span>
+        </div>
+        <div class="clock__hands">
+          <span class="clock__hand clock__hand--hour"></span>
+          <span class="clock__hand clock__hand--minute"></span>
+          <span class="clock__hand clock__hand--second"></span>
+          <span class="clock__pin"></span>
+        </div>
+      </div>
+
+      <div class="time-machine__caption">TEMPORAL DISPLACEMENT</div>
+
+      <div class="year-counter" aria-label="The year travels from 14, 2004 to 14, 2026">
+        <div class="date-display" aria-label="Date">
+          <div class="date-counter__window">
+            <div class="date-counter__track" id="dateTrack"></div>
+          </div>
+        </div>
+
+        <div class="year-counter__window">
+          <div class="year-counter__track" id="yearTrack"></div>
+        </div>
+      </div>
+
+      <button class="time-machine__btn" id="engageBtn">ENGAGE TIME DRIVE</button>
+
+      <div class="time-machine__status">
+        <span class="time-machine__lamp" id="lamp"></span>
+        <span id="statusText">READY FOR DISPLACEMENT</span>
+      </div>
+
+      <div class="time-machine__footer">SAME MOMENT. DIFFERENT TIME.</div>
+    </div>
+
+    <!-- Golden-to-Cyber Dimensional Portal Overlay (Zero-Jank GPU Transition) -->
+    <div class="temporal-portal-overlay" id="temporalPortalOverlay" aria-hidden="true">
+      <div class="portal-core-glow"></div>
+      <div class="portal-chrono-ring portal-chrono-ring--1"></div>
+      <div class="portal-chrono-ring portal-chrono-ring--2"></div>
+    </div>
+
+    <!-- Cyber/Ethno Intermediate View Container -->
+    <div id="cyber-ethno-container">
+      <div class="fingerprint-wrapper" id="fpWrapper">
+        <button class="fingerprint-btn" id="enterGalaxyBtn" aria-label="Touch fingerprint to warp into the galaxy">
+          <span class="fp-scan-line"></span>
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 10c-12 0-21 9-21 21 0 7 2.5 14 7 20" />
+            <path d="M53 31c0-5.5-2-10.5-5.5-14.5" />
+            <path d="M21 15.5C24.2 13.3 28 12 32 12c11 0 20 9 20 20 0 8-3 15.5-8 21" />
+            <path d="M16 31c0-9 7-16 16-16s16 7 16 16c0 6.5-2.5 12.5-6.8 17.2" />
+            <path d="M21 47c-3-4.5-5-10-5-16" />
+            <path d="M21 31c0-6 5-11 11-11s11 5 11 11c0 5.5-2 10.8-5.8 15" />
+            <path d="M25.5 52c-3-4.2-4.5-9.5-4.5-15" />
+            <path d="M26 31c0-3.3 2.7-6 6-6s6 2.7 6 6c0 4.5-1.8 9-5 12.8" />
+            <path d="M32 31c0 3.8-1.5 7.5-4.2 10.5" />
+            <path d="M31 55c3.5-4 6-8.8 7-14" />
+          </svg>
+        </button>
+        <div class="fingerprint-hint" id="fpHint">HOLD TO WARP</div>
+      </div>
+    </div>
+
+    <!-- Shaders for Cyber/Ethno Bloom Postprocessing -->
+    <script type="x-shader/x-vertex" id="vertexshader">
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+      }
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragmentshader">
+      uniform sampler2D baseTexture;
+      uniform sampler2D bloomTexture;
+      varying vec2 vUv;
+      void main() {
+        gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+      }
+    </script>
+
+    <!-- Galaxy View Container -->
+    <div id="galaxy-container">
+      <canvas id="galaxy-canvas"></canvas>
+      <div class="pill">Happy Birthday Bae Bae 🎂💛</div>
+      <button class="to-love-story-btn" id="toLoveStoryBtn">Birthday Wishes 🎂</button>
+      <div class="attribution">Base: tlanex · Adaptación para Jotab 💫</div>
+      <div id="err" class="error"></div>
+      <canvas id="fx" style="position:fixed;inset:0;pointer-events:none;z-index:2;"></canvas>
+    </div>
+
+    <!-- Final View: 5-Slide Birthday Wishes Container -->
+    <div id="love-story-container">
+      <!-- 3D Music Player Background (Kokomi + Swiper) -->
+      <div id="sketch"></div>
+      <div class="vignette"></div>
+      <div id="music-cover-bg">
+        <swiper-container init="false" grab-cursor="false" effect="coverflow" centered-slides="true" slides-per-view="auto" coverflow-effect-rotate="0" coverflow-effect-stretch="50" coverflow-effect-depth="200" coverflow-effect-slide-shadows="false" coverflow-effect-modifier="1.5">
+        </swiper-container>
+      </div>
+
+      <canvas id="heartCanvas" style="z-index: 2;"></canvas>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="bar"></div>
+      </div>
+
+      <div class="slider" id="wishesSlider">
+        <!-- Slide 1 -->
+        <div class="slide active">
+          <div class="glass-card">
+            <span class="emoji">🎂</span>
+            <h1 class="neon-text">Happy 22nd Birthday</h1>
+            <p class="subtitle">“To My Dearest Aye Myat Mon (Bae Bae)”</p>
+            <div class="footer-line">14 · 2004 — 14 · 2026 ✨</div>
+            <button onclick="openFirstWishAndPlayMusic()">Open Wishes 🎁</button>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+          <div class="glass-card">
+            <span class="emoji">🌸</span>
+            <h2>၂၂ နှစ်ပြည့် မွေးနေ့ဆုမွန်ကောင်း</h2>
+            <p>“ဒီနေ့ကျရောက်တဲ့ ၂၂ နှစ်ပြည့် မွေးနေ့လေးကစပြီး ဘဝရဲ့ နေ့ရက်တိုင်းမှာ ပျော်ရွှင်မှု၊ အေးချမ်းမှုတွေနဲ့ပဲ အမြဲပြည့်စုံပါစေ။”</p>
+            <button onclick="next()">Next →</button>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+          <div class="glass-card">
+            <span class="emoji">✨</span>
+            <h2>Your Smile & Brightness</h2>
+            <p>“မင်းရဲ့ အပြုံးလေးတွေက ကိုယ့်ကမ္ဘာကြီးကို အမြဲတမ်း လင်းလက်တောက်ပစေတယ်။ ဒီထက်မက အမြဲတမ်း ပြုံးပျော်နေနိုင်ပါစေနော်။”</p>
+            <button onclick="next()">Next →</button>
+          </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+          <div class="glass-card">
+            <span class="emoji">🎈</span>
+            <h2>Dreams & Success</h2>
+            <p>“မင်းမျှော်မှန်းထားတဲ့ အိပ်မက်တွေ၊ ရည်မှန်းချက်တွေအားလုံး စိတ်ကူးထားတဲ့အတိုင်း အကောင်အထည်ပေါ်ပြီး အောင်မြင်မှုတွေ အများကြီး ရရှိပါစေ။”</p>
+            <button onclick="next()">Next →</button>
+          </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+          <div class="glass-card">
+            <span class="emoji">👑</span>
+            <h2>Happy Birthday Bae Bae!</h2>
+            <p class="big-text">May All Your Wishes Come True 🎂</p>
+            <p>“ကျန်းမာပျော်ရွှင်ပြီး အနာဂတ်ခရီးလမ်းတစ်လျှောက်လုံး ကိုယ်နဲ့အတူ အမှတ်တရကောင်းတွေ အများကြီး ဖန်တီးသွားကြမယ်နော်။”</p>
+            <div class="song-status-pill" id="songStatusPill">
+              <span class="song-wave-dot"></span>
+              <span id="songStatusText">သီချင်းဆုံးသွားတာနဲ့ လက်ဆောင်ထုပ်လေး ပေါ်လာပါမယ် 🎵🎁</span>
+            </div>
+            <div>
+              <button class="skip-to-gift-btn" onclick="triggerGiftFinaleSequence()">လက်ဆောင်ထုပ် အခုဖွင့်မယ် 🎁</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Music Player Controls (Connected to Open Wishes) -->
+      <div id="music-player-controls">
+        <audio class="song" id="bgAudioEl" src="" crossorigin="anonymous"></audio>
+        <input type="range" value="0" class="music-progress-bar progress" id="musicProgress">
+        <div class="music-info-row">
+          <div class="music-track-info">
+            <span class="song-name" id="songNameEl"></span>
+            <span class="divider"> - </span>
+            <span class="song-artist" id="songArtistEl"></span>
+          </div>
+          <div class="music-play-btn" id="playPauseBtn">
+            <svg class="play-icon hidden" id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z" /></svg>
+            <svg class="pause-icon" id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z" /></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- သီချင်းပြီးဆုံးသည်နှင့် ပေါ်လာမည့် လက်ဆောင်ထုပ်၊ အရုပ်ကလေးများနှင့် ဓာတ်ပုံပန်းစည်း Stage -->
+      <div id="gift-finale-stage" aria-live="polite">
+        <div class="finale-scene-wrapper">
+          <!-- 3. လက်ဆောင်ထုပ်ထဲမှ နောက်ဆုံးပေါ်ထွက်လာမည့် ဓာတ်ပုံပန်းစည်း (Photo Bouquet) -->
+          <div class="photo-bouquet" id="photoBouquet">
+            <div class="bouquet-back-wrap"></div>
+            <div class="bouquet-inner-tissue"></div>
+            <div class="bouquet-photos-grid" id="bouquetPhotosGrid"></div>
+            <div class="bouquet-mini-florals">
+              <span class="bouquet-floral-item" style="left:16%; top:26%; animation-delay:0.1s;">🌸</span>
+              <span class="bouquet-floral-item" style="right:16%; top:26%; animation-delay:0.5s;">🌸</span>
+              <span class="bouquet-floral-item" style="left:28%; top:8%; animation-delay:0.3s;">✨</span>
+              <span class="bouquet-floral-item" style="right:28%; top:8%; animation-delay:0.7s;">✨</span>
+              <span class="bouquet-floral-item" style="left:46%; top:2%; animation-delay:0.2s;">👑</span>
+              <span class="bouquet-floral-item" style="left:36%; bottom:34%; animation-delay:0.4s;">🌷</span>
+              <span class="bouquet-floral-item" style="right:36%; bottom:34%; animation-delay:0.8s;">🌷</span>
+            </div>
+            <div class="bouquet-front-wrap"></div>
+            <div class="bouquet-ribbon-knot">🎀</div>
+            <div class="bouquet-banner-tag">Happy 22nd Birthday Bae Bae 💐</div>
+          </div>
+
+          <!-- 2. လက်ဆောင်ထုပ်ထဲမှ အရင်ထွက်လာမည့် ချစ်စရာ အရုပ်ကလေးများ (4 Cute Plushie Dolls) -->
+          <div class="plushie-dolls-layer" id="plushieDollsLayer">
+            <!-- Doll 1: Cute Teddy Bear (Left Outer) -->
+            <div class="plushie-doll" style="--dx: -124px; --dy: -18px; --drot: -15deg; --ddelay: 0.05s;">
+              <svg viewBox="0 0 100 120">
+                <circle cx="24" cy="24" r="14" fill="#c68b59" stroke="#5c3a21" stroke-width="3"/>
+                <circle cx="24" cy="24" r="7" fill="#f3d5b5"/>
+                <circle cx="76" cy="24" r="14" fill="#c68b59" stroke="#5c3a21" stroke-width="3"/>
+                <circle cx="76" cy="24" r="7" fill="#f3d5b5"/>
+                <ellipse cx="50" cy="84" rx="28" ry="26" fill="#c68b59" stroke="#5c3a21" stroke-width="3"/>
+                <ellipse cx="50" cy="86" rx="16" ry="15" fill="#f3d5b5"/>
+                <circle cx="50" cy="46" r="28" fill="#d49a6a" stroke="#5c3a21" stroke-width="3"/>
+                <ellipse cx="50" cy="52" rx="11" ry="8" fill="#fff3e6"/>
+                <circle cx="40" cy="42" r="3.8" fill="#2b1810"/>
+                <circle cx="60" cy="42" r="3.8" fill="#2b1810"/>
+                <ellipse cx="33" cy="49" rx="5" ry="3" fill="#ff758f" opacity="0.7"/>
+                <ellipse cx="67" cy="49" rx="5" ry="3" fill="#ff758f" opacity="0.7"/>
+                <ellipse cx="50" cy="49" rx="4" ry="3" fill="#5c3a21"/>
+                <path d="M46 54 Q50 58 54 54" fill="none" stroke="#5c3a21" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M50 74 C42 66, 32 74, 50 88 C68 74, 58 66, 50 74 Z" fill="#ff2a55" stroke="#fff" stroke-width="1.5"/>
+              </svg>
+            </div>
+
+            <!-- Doll 2: Cute Pink Bunny (Left Inner) -->
+            <div class="plushie-doll" style="--dx: -68px; --dy: 16px; --drot: -8deg; --ddelay: 0.22s;">
+              <svg viewBox="0 0 100 120">
+                <ellipse cx="36" cy="20" rx="8" ry="20" transform="rotate(-10 36 20)" fill="#ffc2d1" stroke="#b55d75" stroke-width="3"/>
+                <ellipse cx="36" cy="20" rx="4" ry="13" transform="rotate(-10 36 20)" fill="#ff8fab"/>
+                <ellipse cx="64" cy="20" rx="8" ry="20" transform="rotate(10 64 20)" fill="#ffc2d1" stroke="#b55d75" stroke-width="3"/>
+                <ellipse cx="64" cy="20" rx="4" ry="13" transform="rotate(10 64 20)" fill="#ff8fab"/>
+                <ellipse cx="50" cy="86" rx="25" ry="24" fill="#ffc2d1" stroke="#b55d75" stroke-width="3"/>
+                <circle cx="50" cy="52" r="25" fill="#ffd6e0" stroke="#b55d75" stroke-width="3"/>
+                <circle cx="41" cy="49" r="3.6" fill="#3d1e28"/>
+                <circle cx="59" cy="49" r="3.6" fill="#3d1e28"/>
+                <ellipse cx="33" cy="55" rx="5" ry="2.8" fill="#ff4d6d" opacity="0.65"/>
+                <ellipse cx="67" cy="55" rx="5" ry="2.8" fill="#ff4d6d" opacity="0.65"/>
+                <polygon points="47,54 53,54 50,58" fill="#ff4d6d"/>
+                <path d="M46 60 Q50 63 54 60" fill="none" stroke="#b55d75" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="50" cy="74" r="6" fill="#ffd700" stroke="#b55d75" stroke-width="2"/>
+              </svg>
+            </div>
+
+            <!-- Doll 3: Cute White Kitty (Right Inner) -->
+            <div class="plushie-doll" style="--dx: 68px; --dy: 16px; --drot: 8deg; --ddelay: 0.38s;">
+              <svg viewBox="0 0 100 120">
+                <polygon points="24,42 28,16 46,32" fill="#fff8f0" stroke="#8c6d62" stroke-width="3" stroke-linejoin="round"/>
+                <polygon points="28,38 30,22 42,32" fill="#ffb3c6"/>
+                <polygon points="76,42 72,16 54,32" fill="#fff8f0" stroke="#8c6d62" stroke-width="3" stroke-linejoin="round"/>
+                <polygon points="72,38 70,22 58,32" fill="#ffb3c6"/>
+                <ellipse cx="50" cy="86" rx="25" ry="24" fill="#fff8f0" stroke="#8c6d62" stroke-width="3"/>
+                <circle cx="50" cy="52" r="26" fill="#ffffff" stroke="#8c6d62" stroke-width="3"/>
+                <circle cx="66" cy="34" r="6" fill="#ff2a55"/>
+                <circle cx="74" cy="38" r="6" fill="#ff2a55"/>
+                <circle cx="70" cy="36" r="3.5" fill="#ffd700"/>
+                <circle cx="40" cy="50" r="3.6" fill="#2b1e1a"/>
+                <circle cx="60" cy="50" r="3.6" fill="#2b1e1a"/>
+                <ellipse cx="50" cy="55" rx="3.5" ry="2.5" fill="#ffb703"/>
+                <line x1="18" y1="50" x2="30" y2="52" stroke="#8c6d62" stroke-width="2" stroke-linecap="round"/>
+                <line x1="18" y1="56" x2="30" y2="56" stroke="#8c6d62" stroke-width="2" stroke-linecap="round"/>
+                <line x1="82" y1="50" x2="70" y2="52" stroke="#8c6d62" stroke-width="2" stroke-linecap="round"/>
+                <line x1="82" y1="56" x2="70" y2="56" stroke="#8c6d62" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <!-- Doll 4: Cute Golden Bear with Crown (Right Outer) -->
+            <div class="plushie-doll" style="--dx: 124px; --dy: -18px; --drot: 15deg; --ddelay: 0.52s;">
+              <svg viewBox="0 0 100 120">
+                <circle cx="25" cy="28" r="13" fill="#f4a261" stroke="#8d4925" stroke-width="3"/>
+                <circle cx="75" cy="28" r="13" fill="#f4a261" stroke="#8d4925" stroke-width="3"/>
+                <ellipse cx="50" cy="85" rx="27" ry="25" fill="#f4a261" stroke="#8d4925" stroke-width="3"/>
+                <circle cx="50" cy="49" r="27" fill="#f9bc7f" stroke="#8d4925" stroke-width="3"/>
+                <polygon points="35,24 38,10 50,19 62,10 65,24" fill="#ffd700" stroke="#8d4925" stroke-width="2" stroke-linejoin="round"/>
+                <circle cx="40" cy="46" r="3.6" fill="#2b1810"/>
+                <circle cx="60" cy="46" r="3.6" fill="#2b1810"/>
+                <ellipse cx="50" cy="54" rx="10" ry="7" fill="#fff5eb"/>
+                <circle cx="50" cy="52" r="3.5" fill="#8d4925"/>
+                <ellipse cx="33" cy="52" rx="5" ry="3" fill="#ff4d6d" opacity="0.65"/>
+                <ellipse cx="67" cy="52" rx="5" ry="3" fill="#ff4d6d" opacity="0.65"/>
+                <path d="M38 72 L62 72 L58 86 L42 86 Z" fill="#d00000" stroke="#ffd700" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 1. လက်ဆောင်ထုပ် (Surprise Gift Box) -->
+          <div class="gift-box-assembly" id="surpriseGiftBox" onclick="manualOpenGiftBox()" title="Tap to open gift">
+            <div class="gift-inner-glow"></div>
+            <div class="gift-box-lid">
+              <div class="gift-box-bow"></div>
+            </div>
+            <div class="gift-box-body"></div>
+          </div>
+
+          <div class="finale-caption-text" id="finaleCaptionText">သင့်အတွက် အထူးမွေးနေ့လက်ဆောင်ထုပ်လေး ရောက်ရှိလာပါပြီ 🎁✨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- External JS Module for Cyber/Ethno Initialization -->
+    <script type="module" src="javascript.js"></script>
+
+  </body>
+</html>

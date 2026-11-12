@@ -1,0 +1,2015 @@
+:root {
+/* Palette */
+--color-ink: #0e0a07;
+--color-umber: #1f1711;
+--color-umber-soft: #3a2b1e;
+--color-chalk: #efe3c8;
+--color-text: #dccdb0;
+--color-parchment: #ecd8ad;
+--color-parchment-deep: #c8a46c;
+--color-gold: #c99a52;
+--color-gold-deep: #8a6431;
+--color-gold-bright: #f2d394;
+--color-shine: #fff5dc;
+--color-lamp: #ffcf8a;
+--color-red: #a8322a;
+--color-red-bright: #e0453a;
+--color-safelight: #c4261c;
+
+/* Typography */
+--font-type: "Special Elite", "Courier New", monospace;
+--font-hand: "Homemade Apple", "Brush Script MT", cursive;
+
+/* Animation config */
+--time-duration: 12s;
+--time-easing: ease-in-out;
+--year-row-height: 1.2em;
+--clock-rotations: 6;
+
+/* Pure Valentine Red & Luxury Gold Theme */
+--valentine-red: #d00000;
+--deep-maroon: #4a0000;
+--gold-accent: #ffd700;
+--bg-dark: #120000;
+}
+
+body {
+background: black;
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+overflow: hidden;
+}
+
+/* Main instrument */
+.time-machine {
+position: relative;
+z-index: 10;
+isolation: isolate;
+display: flex;
+flex-direction: column;
+justify-content: space-evenly;
+width: 100%;
+max-width: 440px;
+height: 94dvh;
+max-height: 820px;
+align-items: center;
+gap: 0.25rem;
+overflow: hidden;
+padding: clamp(0.6rem, 2vh, 1.2rem) 1rem;
+color: var(--color-text);
+background:
+radial-gradient(ellipse at center, #48301b 0%, transparent 70%),
+var(--color-ink);
+border: 1px solid var(--color-gold-deep);
+font-family: var(--font-type);
+text-align: center;
+box-sizing: border-box;
+transform-origin: center center;
+will-change: transform, opacity;
+backface-visibility: hidden;
+transform: translateZ(0);
+}
+
+/* 3x3 Photo Grid & Birthday Message Stage */
+.photo-stage {
+position: relative;
+width: clamp(135px, 22dvh, 185px);
+height: clamp(135px, 22dvh, 185px);
+flex: 0 0 auto;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+/* 3x3 ဇယားကွက်နှင့် ဘောင် (Frame) — Fade Out ဖြစ်သွားမည့် အပိုင်း */
+.photo-matrix-wrapper {
+position: relative;
+width: 100%;
+height: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+border: 2px solid var(--color-gold-deep);
+border-radius: 10px;
+padding: 4px;
+background: linear-gradient(145deg, #1b130d, #0e0a07);
+box-shadow:
+0 0 20px rgba(201, 154, 82, 0.15),
+inset 0 0 15px rgba(0, 0, 0, 0.85);
+box-sizing: border-box;
+overflow: hidden;
+transition:
+opacity 0.9s ease-in-out,
+filter 0.9s ease-in-out,
+transform 0.9s ease-in-out;
+}
+
+.photo-matrix-wrapper.fade-out {
+opacity: 0;
+filter: blur(6px) sepia(0.6);
+transform: scale(0.9);
+pointer-events: none;
+}
+
+.photo-matrix {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+grid-template-rows: repeat(3, minmax(0, 1fr));
+gap: 4px;
+width: 100%;
+height: 100%;
+}
+
+.photo-cell {
+position: relative;
+width: 100%;
+height: 100%;
+min-width: 0;
+min-height: 0;
+overflow: hidden;
+border: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+border-radius: 4px;
+background: var(--color-umber);
+box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.85);
+}
+
+/* 3D Drum / Reel Depth Shadow Overlay (အပေါ်/အောက် လှိမ့်ဝင်သွားသည့် Slot Reel အရိပ်) */
+.photo-cell::after {
+content: "";
+position: absolute;
+inset: 0;
+pointer-events: none;
+z-index: 2;
+background: linear-gradient(
+to bottom,
+rgba(14, 10, 7, 0.72) 0%,
+transparent 22%,
+transparent 78%,
+rgba(14, 10, 7, 0.72) 100%
+);
+transition: box-shadow 0.3s ease;
+}
+
+/* Roll ဖြစ်နေစဉ် ရွှေရောင်အလင်းဘောင်လေး ပေါ်လာစေခြင်း */
+.photo-matrix-wrapper.rolling .photo-cell {
+border-color: var(--color-gold-bright);
+}
+
+/* Track ၏ အမြင့်ကို အကွက်ပေါင်း (steps * 100%) အတိအကျ ပေးထားပြီး တစ်ကွက်ချင်းစီ အတိအကျ ချိန်သားကိုက် ရပ်တန့်စေခြင်း */
+.photo-cell__track {
+display: flex;
+flex-direction: column;
+width: 100%;
+height: calc(var(--cell-steps, 23) * 100%);
+will-change: transform;
+transform: translate3d(0, 0, 0);
+backface-visibility: hidden;
+}
+
+/* အပေါ်သို့ ဆွဲတင်သော Roll Animation (Year Counter နှင့် တိကျစွာ ချိန်သားကိုက်) */
+.photo-cell__track.roll-up {
+transform: translate3d(0, 0%, 0);
+}
+
+.photo-cell__track.roll-up.active {
+animation: photo-roll-up var(--time-duration) var(--time-easing) both;
+}
+
+/* အောက်သို့ ဆွဲချသော Roll Animation (Year Counter နှင့် တိကျစွာ ချိန်သားကိုက်) */
+.photo-cell__track.roll-down {
+transform: translate3d(0, calc(-100% * (var(--cell-steps, 23) - 1) / var(--cell-steps, 23)), 0);
+}
+
+.photo-cell__track.roll-down.active {
+animation: photo-roll-down var(--time-duration) var(--time-easing) both;
+}
+
+.photo-cell__item {
+flex: 0 0 calc(100% / var(--cell-steps, 23));
+width: 100%;
+height: calc(100% / var(--cell-steps, 23));
+min-height: 0;
+overflow: hidden;
+box-sizing: border-box;
+border-block: 0.5px solid rgba(201, 154, 82, 0.22);
+}
+
+.photo-cell__item img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+display: block;
+filter: sepia(0.22) contrast(1.06) brightness(0.95);
+transform: translateZ(0);
+}
+
+/* 3x3 ဘောင် ပျောက်သွားပြီးမှ ပေါ်လာမည့် "၂၂ နှစ်ပြည့် မွေးနေ့ ဆုတောင်းများ" စာသား */
+.birthday-reveal {
+position: absolute;
+inset: 0;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 0.5rem;
+opacity: 0;
+transform: scale(0.88);
+transition: opacity 1s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+pointer-events: none;
+}
+
+.birthday-reveal.visible {
+opacity: 1;
+transform: scale(1);
+}
+
+.birthday-reveal__ornament {
+color: var(--color-gold);
+font-size: 0.65rem;
+letter-spacing: 0.22em;
+margin-block: 0.25rem;
+opacity: 0.85;
+}
+
+.birthday-reveal__title {
+font-family: "Noto Serif Myanmar", "Padauk", var(--font-type), serif;
+font-size: clamp(1.25rem, 5.2vw, 1.65rem);
+font-weight: 700;
+color: #fff6dc;
+text-shadow:
+0 0 12px rgba(255, 220, 130, 0.9),
+0 0 28px rgba(201, 154, 82, 0.75),
+0 2px 6px rgba(0, 0, 0, 1);
+line-height: 1.55;
+letter-spacing: 0.04em;
+text-align: center;
+}
+
+/* ====== ULTRA-SMOOTH GPU PORTAL TRANSITION (TIME MACHINE -> CYBER TREE) ====== */
+.time-machine.zoom-out {
+animation: tm-cinematic-exit 2.4s cubic-bezier(0.65, 0, 0.15, 1) forwards;
+pointer-events: none;
+}
+
+@keyframes tm-cinematic-exit {
+0% {
+transform: perspective(1000px) translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+opacity: 1;
+}
+30% {
+/* အနောက်သို့ အနည်းငယ်ဆုတ်ပြီး အရှိန်ယူသည့် အနုစိတ် အဆင့် /
+transform: perspective(1000px) translate3d(0, 0, -90px) scale(0.92) rotateZ(-2.5deg);
+opacity: 0.95;
+}
+100% {
+/ ကင်မရာရှေ့သို့ ညင်သာချောမွေ့စွာ ဆွဲဝင်ပျောက်ကွယ်သွားခြင်း (CSS Blur မသုံးထားသဖြင့် လုံးဝမထစ်ပါ) */
+transform: perspective(1000px) translate3d(0, 0, 750px) scale(2.8) rotateZ(8deg);
+opacity: 0;
+}
+}
+
+/* Golden-to-Cyber Dimensional Portal Overlay */
+.temporal-portal-overlay {
+position: fixed;
+inset: 0;
+z-index: 15;
+pointer-events: none;
+opacity: 0;
+visibility: hidden;
+display: flex;
+justify-content: center;
+align-items: center;
+overflow: hidden;
+will-change: opacity;
+}
+
+.temporal-portal-overlay.active {
+visibility: visible;
+animation: portal-overlay-fade 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.portal-core-glow {
+position: absolute;
+width: 140vmax;
+height: 140vmax;
+border-radius: 50%;
+background: radial-gradient(
+circle,
+rgba(255, 248, 225, 0.95) 0%,
+rgba(242, 211, 148, 0.75) 16%,
+rgba(0, 238, 255, 0.55) 38%,
+rgba(136, 255, 170, 0.2) 58%,
+transparent 75%
+);
+transform: scale3d(0.01, 0.01, 1);
+will-change: transform, opacity;
+}
+
+.temporal-portal-overlay.active .portal-core-glow {
+animation: portal-core-expand 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.portal-chrono-ring {
+position: absolute;
+border-radius: 50%;
+border: 1.5px dashed rgba(242, 211, 148, 0.75);
+box-shadow: 0 0 35px rgba(0, 238, 255, 0.4), inset 0 0 25px rgba(242, 211, 148, 0.35);
+transform: scale3d(0.05, 0.05, 1) rotate(0deg);
+will-change: transform, opacity;
+}
+
+.portal-chrono-ring--1 {
+width: 55vmin;
+height: 55vmin;
+}
+
+.portal-chrono-ring--2 {
+width: 85vmin;
+height: 85vmin;
+border-style: solid;
+border-width: 1px;
+border-color: rgba(0, 238, 255, 0.65);
+}
+
+.temporal-portal-overlay.active .portal-chrono-ring--1 {
+animation: portal-ring-spin-1 2.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.temporal-portal-overlay.active .portal-chrono-ring--2 {
+animation: portal-ring-spin-2 2.6s cubic-bezier(0.19, 1, 0.22, 1) 0.1s forwards;
+}
+
+@keyframes portal-overlay-fade {
+0% { opacity: 0; }
+25% { opacity: 1; }
+60% { opacity: 1; }
+100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes portal-core-expand {
+0% {
+transform: scale3d(0.01, 0.01, 1);
+opacity: 0;
+}
+35% {
+opacity: 1;
+}
+100% {
+transform: scale3d(1.65, 1.65, 1);
+opacity: 0;
+}
+}
+
+@keyframes portal-ring-spin-1 {
+0% {
+transform: scale3d(0.1, 0.1, 1) rotate(0deg);
+opacity: 0;
+}
+30% {
+opacity: 0.95;
+}
+100% {
+transform: scale3d(3.4, 3.4, 1) rotate(160deg);
+opacity: 0;
+}
+}
+
+@keyframes portal-ring-spin-2 {
+0% {
+transform: scale3d(0.05, 0.05, 1) rotate(0deg);
+opacity: 0;
+}
+35% {
+opacity: 0.85;
+}
+100% {
+transform: scale3d(2.8, 2.8, 1) rotate(-140deg);
+opacity: 0;
+}
+}
+
+/* Cyber/Ethno Intermediate Container Styles */
+#cyber-ethno-container {
+position: fixed;
+inset: 0;
+z-index: 5;
+opacity: 0;
+visibility: hidden;
+transform: scale3d(1.18, 1.18, 1);
+will-change: opacity, transform;
+backface-visibility: hidden;
+transition:
+opacity 2.2s cubic-bezier(0.22, 1, 0.36, 1),
+transform 2.6s cubic-bezier(0.16, 1, 0.3, 1),
+visibility 2.2s;
+}
+
+#cyber-ethno-container.visible {
+opacity: 1;
+visibility: visible;
+transform: scale3d(1, 1, 1);
+}
+
+/* Cyberpunk Tree မှ Galaxy သို့ မသိမသာ ချောမွေ့စွာ ပေါင်းစပ်ကူးပြောင်းမည့် GPU Transition */
+#cyber-ethno-container.zoom-out {
+transform: scale3d(1.12, 1.12, 1);
+opacity: 0;
+pointer-events: none;
+transition:
+transform 2.6s cubic-bezier(0.22, 1, 0.36, 1),
+opacity 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#cyber-ethno-container canvas {
+position: fixed;
+inset: 0;
+width: 100%;
+height: 100%;
+display: block;
+z-index: 1;
+}
+
+/* Biometric Fingerprint Scanner Button */
+.fingerprint-wrapper {
+position: absolute;
+bottom: 6vh;
+left: 50%;
+transform: translateX(-50%);
+z-index: 20;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 0.65rem;
+user-select: none;
+-webkit-user-select: none;
+}
+
+.fingerprint-btn {
+position: relative;
+width: 82px;
+height: 82px;
+border-radius: 50%;
+background: radial-gradient(circle at center, rgba(0, 238, 255, 0.16) 0%, rgba(10, 24, 22, 0.88) 75%);
+border: 1.5px solid rgba(0, 238, 255, 0.65);
+box-shadow:
+0 0 25px rgba(0, 238, 255, 0.35),
+inset 0 0 18px rgba(0, 238, 255, 0.25);
+cursor: pointer;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 0;
+outline: none;
+backdrop-filter: blur(8px);
+transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+-webkit-tap-highlight-color: transparent;
+}
+
+/* Rotating Cyber Outer Ring */
+.fingerprint-btn::before {
+content: "";
+position: absolute;
+inset: -7px;
+border-radius: 50%;
+border: 1.5px dashed rgba(136, 255, 170, 0.65);
+animation: fp-ring-spin 10s linear infinite;
+pointer-events: none;
+transition: all 0.4s ease;
+}
+
+/* Pulsing Aura Ring */
+.fingerprint-btn::after {
+content: "";
+position: absolute;
+inset: -13px;
+border-radius: 50%;
+border: 1px solid rgba(0, 238, 255, 0.28);
+animation: fp-pulse 2.2s ease-in-out infinite alternate;
+pointer-events: none;
+}
+
+.fingerprint-btn svg {
+width: 46px;
+height: 46px;
+stroke: #00eeff;
+fill: none;
+stroke-width: 2.2;
+stroke-linecap: round;
+stroke-linejoin: round;
+filter: drop-shadow(0 0 6px rgba(0, 238, 255, 0.85));
+transition: all 0.35s ease;
+}
+
+.fingerprint-btn svg path {
+stroke-dasharray: 120;
+stroke-dashoffset: 0;
+animation: fp-ridge-glow 3.5s ease-in-out infinite alternate;
+}
+
+/* Laser Scan Line inside circle */
+.fp-scan-line {
+position: absolute;
+left: 12%;
+right: 12%;
+height: 2px;
+background: linear-gradient(90deg, transparent, #88ffaa, #00eeff, #88ffaa, transparent);
+box-shadow: 0 0 12px #00eeff;
+opacity: 0.75;
+border-radius: 2px;
+animation: fp-scan-move 2.4s ease-in-out infinite;
+pointer-events: none;
+}
+
+.fingerprint-btn:hover {
+transform: scale(1.08);
+border-color: #88ffaa;
+box-shadow:
+0 0 35px rgba(136, 255, 170, 0.65),
+inset 0 0 24px rgba(0, 238, 255, 0.45);
+}
+
+.fingerprint-btn:hover svg {
+stroke: #88ffaa;
+filter: drop-shadow(0 0 10px rgba(136, 255, 170, 1));
+}
+
+/* Engaged / Pressed State */
+.fingerprint-btn:active,
+.fingerprint-btn.activating {
+transform: scale(0.94);
+border-color: #ffffff;
+background: radial-gradient(circle at center, rgba(136, 255, 170, 0.45) 0%, rgba(0, 238, 255, 0.3) 80%);
+box-shadow:
+0 0 55px rgba(0, 238, 255, 0.95),
+0 0 90px rgba(136, 255, 170, 0.8),
+inset 0 0 30px rgba(255, 255, 255, 0.75);
+}
+
+.fingerprint-btn.activating::before {
+animation: fp-ring-spin 0.6s linear infinite;
+border-color: #ffffff;
+inset: -10px;
+}
+
+.fingerprint-btn.activating svg {
+stroke: #ffffff;
+filter: drop-shadow(0 0 16px #ffffff);
+transform: scale(1.08);
+}
+
+.fingerprint-hint {
+font-family: var(--font-type);
+font-size: 0.65rem;
+letter-spacing: 0.22em;
+color: #88ffaa;
+text-shadow: 0 0 8px rgba(0, 238, 255, 0.8);
+opacity: 0.85;
+pointer-events: none;
+transition: all 0.3s ease;
+}
+
+.fingerprint-wrapper.activating .fingerprint-hint {
+color: #ffffff;
+letter-spacing: 0.3em;
+text-shadow: 0 0 14px #00eeff;
+}
+
+@keyframes fp-ring-spin {
+from { transform: rotate(0deg); }
+to { transform: rotate(360deg); }
+}
+
+@keyframes fp-pulse {
+from { transform: scale(0.95); opacity: 0.35; }
+to { transform: scale(1.1); opacity: 0.9; }
+}
+
+@keyframes fp-scan-move {
+0%, 100% { top: 18%; opacity: 0.2; }
+50% { top: 82%; opacity: 0.95; }
+}
+
+@keyframes fp-ridge-glow {
+0% { stroke-dashoffset: 0; opacity: 0.85; }
+100% { stroke-dashoffset: 35; opacity: 1; }
+}
+
+/* Galaxy Container Styles (Seamless Cosmic Emergence) */
+#galaxy-container {
+position: fixed;
+inset: 0;
+z-index: 6;
+opacity: 0;
+visibility: hidden;
+transform: scale3d(0.94, 0.94, 1);
+pointer-events: none;
+will-change: opacity, transform;
+transition:
+opacity 2.4s cubic-bezier(0.22, 1, 0.36, 1),
+transform 2.8s cubic-bezier(0.16, 1, 0.3, 1),
+visibility 2.4s;
+}
+
+#galaxy-container.visible {
+opacity: 1;
+visibility: visible;
+transform: scale3d(1, 1, 1);
+pointer-events: auto;
+}
+
+#galaxy-container.zoom-out-red {
+transform: scale(3.2);
+opacity: 0;
+filter: brightness(2.2) blur(10px);
+pointer-events: none;
+transition:
+transform 1.8s cubic-bezier(0.6, 0.05, 0.85, 0.2),
+opacity 1.6s ease-in,
+filter 1.6s ease-in;
+}
+
+#galaxy-canvas {
+position: fixed;
+inset: 0;
+width: 100%;
+height: 100%;
+display: block;
+touch-action: none;
+}
+
+.attribution {
+position: fixed;
+left: 10px;
+bottom: 10px;
+font-size: 11px;
+color: #b9a0ff;
+opacity: 0.8;
+background: rgba(0, 0, 0, 0.35);
+padding: 6px 8px;
+border-radius: 8px;
+font-family: system-ui, sans-serif;
+z-index: 3;
+}
+
+.pill {
+position: fixed;
+top: 10px;
+left: 50%;
+transform: translateX(-50%);
+padding: 6px 12px;
+border-radius: 999px;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.18);
+color: #fff;
+font: 12px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial;
+white-space: nowrap;
+z-index: 3;
+}
+
+/* Galaxy to Love Story Button */
+.to-love-story-btn {
+position: fixed;
+bottom: 4.5vh;
+left: 50%;
+transform: translateX(-50%);
+z-index: 15;
+padding: 12px 30px;
+border-radius: 999px;
+background: radial-gradient(circle at center, rgba(208, 0, 0, 0.45) 0%, rgba(45, 0, 15, 0.85) 100%);
+border: 1.5px solid rgba(255, 100, 130, 0.75);
+color: #fff;
+font-family: 'Poppins', system-ui, sans-serif;
+font-size: 0.85rem;
+font-weight: 600;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+cursor: pointer;
+backdrop-filter: blur(10px);
+box-shadow:
+0 0 22px rgba(208, 0, 0, 0.6),
+0 0 45px rgba(255, 50, 100, 0.25),
+inset 0 0 15px rgba(255, 120, 150, 0.35);
+transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+animation: heart-btn-pulse 2s ease-in-out infinite alternate;
+white-space: nowrap;
+}
+
+.to-love-story-btn:hover {
+transform: translateX(-50%) scale(1.08) translateY(-2px);
+background: radial-gradient(circle at center, rgba(235, 0, 30, 0.75) 0%, rgba(90, 0, 20, 0.95) 100%);
+border-color: var(--gold-accent);
+box-shadow:
+0 0 35px rgba(220, 0, 0, 0.95),
+0 0 65px rgba(255, 215, 0, 0.45),
+inset 0 0 20px rgba(255, 255, 255, 0.45);
+}
+
+.to-love-story-btn.activating {
+pointer-events: none;
+background: var(--valentine-red);
+border-color: #fff;
+box-shadow: 0 0 60px #ff002b, 0 0 110px #d00000;
+transform: translateX(-50%) scale(0.95);
+}
+
+@keyframes heart-btn-pulse {
+from {
+box-shadow: 0 0 18px rgba(208, 0, 0, 0.5), inset 0 0 12px rgba(255, 100, 130, 0.25);
+}
+to {
+box-shadow: 0 0 32px rgba(255, 30, 70, 0.85), 0 0 55px rgba(208, 0, 0, 0.45), inset 0 0 20px rgba(255, 150, 170, 0.5);
+}
+}
+
+/* ====== LOVE STORY CONTAINER (FINAL SCENE) ====== */
+#love-story-container {
+position: fixed;
+inset: 0;
+z-index: 30;
+background: transparent;
+font-family: 'Poppins', sans-serif;
+color: white;
+height: 100vh;
+width: 100vw;
+overflow: hidden;
+opacity: 0;
+visibility: hidden;
+transform: scale(1.08);
+transition:
+opacity 2s ease-out,
+transform 2s cubic-bezier(0.2, 0.8, 0.2, 1),
+visibility 2s;
+}
+
+#love-story-container.visible {
+opacity: 1;
+visibility: visible;
+transform: scale(1);
+}
+
+#heartCanvas {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+z-index: 1;
+pointer-events: none;
+}
+
+/* Progress Bar in Red/Gold */
+#love-story-container .progress-container {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 6px;
+background: rgba(255, 255, 255, 0.1);
+z-index: 100;
+}
+
+#love-story-container .progress-bar {
+height: 100%;
+width: 0%;
+background: linear-gradient(to right, var(--valentine-red), var(--gold-accent));
+box-shadow: 0 0 15px var(--valentine-red);
+transition: width 0.4s ease;
+}
+
+#love-story-container .slider {
+position: relative;
+height: 100vh;
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 10;
+}
+
+#love-story-container .slide {
+position: absolute;
+opacity: 0;
+transform: scale(0.9) translateY(30px);
+transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+pointer-events: none;
+text-align: center;
+width: 100%;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+#love-story-container .slide.active {
+opacity: 1;
+transform: scale(1) translateY(0);
+pointer-events: all;
+}
+
+#love-story-container .glass-card {
+background: rgba(255, 255, 255, 0.05);
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+border: 1px solid rgba(212, 175, 55, 0.3);
+padding: 3.5rem;
+border-radius: 40px;
+max-width: 500px;
+width: 90%;
+box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(208, 0, 0, 0.2);
+box-sizing: border-box;
+}
+
+#love-story-container .emoji {
+font-size: 55px;
+display: block;
+margin-bottom: 15px;
+filter: drop-shadow(0 0 10px var(--valentine-red));
+}
+
+#love-story-container h1,
+#love-story-container h2 {
+font-family: 'Dancing Script', cursive;
+margin-top: 0;
+margin-bottom: 20px;
+letter-spacing: 2px;
+}
+
+#love-story-container .neon-text {
+color: #fff;
+text-shadow: 0 0 10px var(--valentine-red), 0 0 20px var(--valentine-red), 0 0 30px var(--valentine-red);
+}
+
+#love-story-container p {
+font-size: 1.15rem;
+line-height: 1.8;
+color: #f0f0f0;
+margin-top: 0;
+margin-bottom: 30px;
+font-weight: 300;
+}
+
+#love-story-container .big-text {
+font-size: 2rem;
+font-weight: bold;
+color: var(--gold-accent);
+}
+
+#love-story-container button {
+background: transparent;
+border: 2px solid var(--valentine-red);
+padding: 12px 40px;
+color: white;
+border-radius: 50px;
+cursor: pointer;
+font-family: 'Poppins', sans-serif;
+font-weight: 600;
+transition: 0.3s;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+#love-story-container button:hover {
+background: var(--valentine-red);
+box-shadow: 0 0 30px var(--valentine-red);
+transform: translateY(-3px);
+}
+
+#love-story-container .neon-btn {
+background: var(--valentine-red);
+border: none;
+box-shadow: 0 0 20px rgba(208, 0, 0, 0.6);
+}
+
+#love-story-container .footer-line {
+font-size: 0.9rem;
+color: var(--gold-accent);
+margin-bottom: 20px;
+font-style: italic;
+}
+
+/* ====== 3D MUSIC PLAYER BACKGROUND & CONTROLS ====== */
+#sketch {
+position: absolute;
+z-index: 0;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: black;
+}
+#music-cover-bg {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100%;
+height: 100%;
+z-index: 1;
+pointer-events: none;
+opacity: 0.55;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+swiper-slide {
+position: relative;
+width: clamp(220px, 40vw, 320px);
+padding-bottom: 120px;
+}
+swiper-slide img {
+width: 100%;
+height: 100%;
+display: block;
+aspect-ratio: 1/1;
+object-fit: cover;
+border-radius: 16px;
+-webkit-box-reflect: below -6px linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.4));
+}
+.vignette {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+box-shadow: 0 0 120px rgba(0, 0, 0, 0.95) inset;
+pointer-events: none;
+z-index: 2;
+}
+#music-player-controls {
+position: absolute;
+bottom: 25px;
+left: 50%;
+transform: translateX(-50%);
+width: 90%;
+max-width: 420px;
+z-index: 20;
+display: flex;
+flex-direction: column;
+gap: 12px;
+opacity: 0;
+visibility: hidden;
+transition: opacity 1s ease;
+background: rgba(20, 0, 10, 0.65);
+padding: 16px 24px;
+border-radius: 20px;
+border: 1px solid rgba(255, 215, 0, 0.25);
+backdrop-filter: blur(12px);
+}
+#music-player-controls.visible {
+opacity: 1;
+visibility: visible;
+}
+.music-progress-bar {
+-webkit-appearance: none;
+width: 100%;
+height: 5px;
+background: rgba(255,255,255,0.3);
+border-radius: 4px;
+overflow: hidden;
+cursor: pointer;
+}
+.music-progress-bar::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 10px;
+height: 10px;
+background: var(--gold-accent);
+box-shadow: -10000px 0 0 10000px var(--gold-accent);
+}
+.music-info-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+color: white;
+}
+.music-track-info {
+flex: 1;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+font-family: 'Poppins', sans-serif;
+}
+.music-track-info .song-name {
+font-weight: 600;
+font-size: 1.05rem;
+color: #fff6dc;
+}
+.music-track-info .divider, .music-track-info .song-artist {
+opacity: 0.65;
+font-size: 0.85rem;
+}
+.music-play-btn {
+cursor: pointer;
+width: 28px;
+height: 28px;
+color: var(--gold-accent);
+display: flex;
+justify-content: center;
+align-items: center;
+transition: transform 0.2s ease;
+}
+.music-play-btn:active {
+transform: scale(0.9);
+}
+.music-play-btn svg {
+width: 100%;
+height: 100%;
+fill: currentColor;
+}
+.music-play-btn .hidden {
+display: none;
+}
+
+/* ====== SURPRISE GIFT BOX, PLUSHIE DOLLS & PHOTO BOUQUET FINALE ====== */
+.song-status-pill {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+background: rgba(208, 0, 0, 0.22);
+border: 1px solid rgba(255, 215, 0, 0.45);
+padding: 7px 16px;
+border-radius: 999px;
+font-size: 0.78rem;
+color: #ffe8a3;
+margin-bottom: 14px;
+box-shadow: 0 0 15px rgba(208, 0, 0, 0.35);
+}
+
+.song-wave-dot {
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: var(--gold-accent);
+box-shadow: 0 0 8px var(--gold-accent);
+animation: pulse-dot 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-dot {
+from { transform: scale(0.75); opacity: 0.5; }
+to { transform: scale(1.25); opacity: 1; }
+}
+
+.skip-to-gift-btn {
+font-size: 0.72rem !important;
+padding: 8px 22px !important;
+border-width: 1px !important;
+border-color: rgba(255, 215, 0, 0.55) !important;
+color: #ffdf85 !important;
+opacity: 0.88;
+}
+
+#gift-finale-stage {
+position: fixed;
+inset: 0;
+z-index: 45;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+background: radial-gradient(circle at center, rgba(60, 0, 12, 0.92) 0%, rgba(12, 0, 2, 0.98) 100%);
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+transition: opacity 1.1s ease, visibility 1.1s ease;
+overflow: hidden;
+}
+
+#gift-finale-stage.visible {
+opacity: 1;
+visibility: visible;
+pointer-events: all;
+}
+
+.finale-scene-wrapper {
+position: relative;
+width: min(94vw, 430px);
+height: min(86dvh, 690px);
+display: flex;
+flex-direction: column;
+justify-content: flex-end;
+align-items: center;
+padding-bottom: 3.5dvh;
+box-sizing: border-box;
+}
+
+/* 3. ဓာတ်ပုံပန်းစည်း (Photo Bouquet) — လက်ဆောင်ထုပ်ထဲမှ နောက်ဆုံးပေါ်ထွက်လာမည့် အပိုင်း */
+.photo-bouquet {
+position: absolute;
+bottom: 135px;
+left: 50%;
+width: 320px;
+height: 410px;
+transform: translateX(-50%) translateY(150px) scale(0.08);
+opacity: 0;
+z-index: 12;
+pointer-events: none;
+transition:
+transform 1.5s cubic-bezier(0.22, 1.28, 0.36, 1),
+opacity 0.9s ease-out;
+filter: drop-shadow(0 18px 38px rgba(0, 0, 0, 0.85));
+}
+
+.photo-bouquet.bloom {
+transform: translateX(-50%) translateY(0) scale(1);
+opacity: 1;
+pointer-events: auto;
+animation: bouquet-gentle-float 4s ease-in-out 1.5s infinite alternate;
+}
+
+@keyframes bouquet-gentle-float {
+from { transform: translateX(-50%) translateY(0) scale(1); }
+to { transform: translateX(-50%) translateY(-9px) scale(1.02); }
+}
+
+/* ပန်းစည်း အနောက်ခံ စက္ကူအုပ် (Kraft/Velvet Wrapping Cone) */
+.bouquet-back-wrap {
+position: absolute;
+bottom: 42px;
+left: 50%;
+transform: translateX(-50%);
+width: 285px;
+height: 300px;
+background: linear-gradient(155deg, #6e081d 0%, #3b000b 60%, #240005 100%);
+clip-path: polygon(6% 18%, 24% 3%, 50% 10%, 76% 3%, 94% 18%, 67% 100%, 33% 100%);
+border-top: 2px solid rgba(255, 215, 0, 0.65);
+box-shadow: inset 0 0 30px rgba(255, 190, 120, 0.22);
+z-index: 1;
+}
+
+.bouquet-inner-tissue {
+position: absolute;
+bottom: 58px;
+left: 50%;
+transform: translateX(-50%);
+width: 265px;
+height: 270px;
+background: radial-gradient(circle at 50% 25%, #fff8eb 0%, #f5d8a8 65%, #cfa263 100%);
+clip-path: polygon(10% 14%, 30% 4%, 50% 12%, 70% 4%, 90% 14%, 64% 100%, 36% 100%);
+opacity: 0.94;
+z-index: 2;
+}
+
+/* ပန်းစည်းအတွင်းရှိ သူမ၏ ဓာတ်ပုံများ (9 Fan-Arranged Photo Blooms) */
+.bouquet-photos-grid {
+position: absolute;
+inset: 0;
+z-index: 5;
+}
+
+.bouquet-photo-stem {
+position: absolute;
+left: 50%;
+bottom: 118px;
+width: 74px;
+height: 92px;
+padding: 4px 4px 13px 4px;
+background: linear-gradient(145deg, #ffffff 0%, #fff3db 100%);
+border: 1.5px solid var(--gold-accent);
+border-radius: 10px;
+box-shadow:
+0 8px 20px rgba(0, 0, 0, 0.6),
+0 0 12px rgba(255, 215, 0, 0.35);
+transform-origin: center 150px;
+transform: translateX(-50%) translate(var(--bx, 0px), var(--by, 0px)) rotate(var(--brot, 0deg)) scale(var(--bscale, 1));
+box-sizing: border-box;
+transition: transform 0.35s ease, z-index 0s;
+}
+
+/* ဓာတ်ပုံတစ်ခုချင်းစီ အောက်ခြေ ပန်းရိုးတံလေး */
+.bouquet-photo-stem::before {
+content: "";
+position: absolute;
+left: 50%;
+top: 100%;
+width: 3px;
+height: 85px;
+background: linear-gradient(to bottom, #ffd700, #2d6a4f);
+transform: translateX(-50%);
+z-index: -1;
+}
+
+/* ဓာတ်ပုံထောင့်နားက နှင်းဆီပွင့်ဖတ်လေး */
+.bouquet-photo-stem::after {
+content: "🌹";
+position: absolute;
+bottom: -4px;
+right: -5px;
+font-size: 14px;
+filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.bouquet-photo-stem img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 6px;
+display: block;
+}
+
+.bouquet-mini-florals {
+position: absolute;
+inset: 0;
+z-index: 6;
+pointer-events: none;
+}
+
+.bouquet-floral-item {
+position: absolute;
+font-size: 1.35rem;
+filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+animation: floral-twinkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes floral-twinkle {
+from { transform: scale(0.9) rotate(-6deg); }
+to { transform: scale(1.12) rotate(6deg); }
+}
+
+/* ပန်းစည်း အရှေ့ဘက် စက္ကူအုပ်နှင့် ဖဲပြား (Front Bouquet Wrap & Ribbon Bow) */
+.bouquet-front-wrap {
+position: absolute;
+bottom: 18px;
+left: 50%;
+transform: translateX(-50%);
+width: 240px;
+height: 155px;
+background: linear-gradient(180deg, #b8001f 0%, #6b0010 55%, #380006 100%);
+clip-path: polygon(12% 0%, 50% 24%, 88% 0%, 66% 100%, 34% 100%);
+border-top: 2px solid var(--gold-accent);
+box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.65);
+z-index: 8;
+}
+
+.bouquet-ribbon-knot {
+position: absolute;
+bottom: 66px;
+left: 50%;
+transform: translateX(-50%);
+z-index: 9;
+font-size: 2.4rem;
+filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 14px rgba(255, 215, 0, 0.7));
+}
+
+.bouquet-banner-tag {
+position: absolute;
+bottom: 30px;
+left: 50%;
+transform: translateX(-50%);
+z-index: 10;
+background: linear-gradient(90deg, #ffd700, #fff4cc, #ffd700);
+color: #4a0000;
+font-family: 'Dancing Script', cursive;
+font-weight: 700;
+font-size: 1.05rem;
+padding: 4px 18px;
+border-radius: 999px;
+white-space: nowrap;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.75), 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+/* 2. လက်ဆောင်ထုပ်ထဲမှ ခုန်ထွက်လာမည့် အရုပ်ကလေးများ (Cute Plushie Dolls Layer) */
+.plushie-dolls-layer {
+position: absolute;
+bottom: 105px;
+left: 50%;
+transform: translateX(-50%);
+width: 100%;
+height: 220px;
+z-index: 16;
+pointer-events: none;
+}
+
+.plushie-doll {
+position: absolute;
+left: 50%;
+bottom: 10px;
+width: 68px;
+height: 82px;
+transform: translateX(-50%) translate(0px, 45px) scale(0);
+opacity: 0;
+transition:
+transform 0.95s cubic-bezier(0.34, 1.56, 0.64, 1),
+opacity 0.45s ease-out;
+filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.75));
+}
+
+.plushie-doll.pop-out {
+transform: translateX(-50%) translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--drot, 0deg)) scale(1);
+opacity: 1;
+animation: doll-happy-bounce 2.2s ease-in-out calc(var(--ddelay, 0s) + 0.95s) infinite alternate;
+}
+
+@keyframes doll-happy-bounce {
+from {
+transform: translateX(-50%) translate(var(--dx, 0px), var(--dy, 0px)) rotate(calc(var(--drot, 0deg) - 4deg)) scale(1);
+}
+to {
+transform: translateX(-50%) translate(var(--dx, 0px), calc(var(--dy, 0px) - 10px)) rotate(calc(var(--drot, 0deg) + 4deg)) scale(1.06);
+}
+}
+
+.plushie-doll svg {
+width: 100%;
+height: 100%;
+overflow: visible;
+}
+
+/* 1. လက်ဆောင်ထုပ် (Luxury Surprise Gift Box) */
+.gift-box-assembly {
+position: relative;
+width: 148px;
+height: 122px;
+z-index: 20;
+cursor: pointer;
+transform: scale(0);
+transition: transform 0.85s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gift-box-assembly.appear {
+transform: scale(1);
+}
+
+.gift-box-assembly.shaking {
+animation: gift-excited-shake 0.9s ease-in-out infinite;
+}
+
+.gift-box-assembly.opened {
+transform: translateY(18px) scale(0.86);
+transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes gift-excited-shake {
+0%, 100% { transform: scale(1) rotate(0deg); }
+20% { transform: scale(1.05, 0.95) rotate(-5deg); }
+40% { transform: scale(0.96, 1.04) rotate(5deg); }
+60% { transform: scale(1.04, 0.96) rotate(-4deg); }
+80% { transform: scale(0.98, 1.02) rotate(4deg); }
+}
+
+.gift-box-lid {
+position: absolute;
+top: -24px;
+left: -9px;
+width: 166px;
+height: 34px;
+background: linear-gradient(135deg, #ff1e42 0%, #b80018 100%);
+border: 2px solid var(--gold-accent);
+border-radius: 8px;
+box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+z-index: 4;
+transform-origin: center bottom;
+transition:
+transform 1.1s cubic-bezier(0.3, 1.4, 0.5, 1),
+opacity 0.9s ease;
+}
+
+.gift-box-lid::before {
+content: "";
+position: absolute;
+left: 50%;
+top: 0;
+bottom: 0;
+width: 26px;
+background: linear-gradient(90deg, #d49b00, #ffd700, #fff3b0, #ffd700, #d49b00);
+transform: translateX(-50%);
+}
+
+/* အဖုံးပေါ်က ရွှေရောင်ဖဲပြား */
+.gift-box-bow {
+position: absolute;
+top: -26px;
+left: 50%;
+transform: translateX(-50%);
+width: 68px;
+height: 30px;
+display: flex;
+justify-content: space-between;
+}
+
+.gift-box-bow::before,
+.gift-box-bow::after {
+content: "";
+width: 30px;
+height: 26px;
+border: 4px solid var(--gold-accent);
+border-radius: 50% 50% 0 50%;
+background: rgba(255, 215, 0, 0.25);
+box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+}
+
+.gift-box-bow::after {
+border-radius: 50% 50% 50% 0;
+}
+
+.gift-box-assembly.opened .gift-box-lid {
+transform: translateY(-145px) translateX(65px) rotate(38deg) scale(0.75);
+opacity: 0;
+}
+
+.gift-box-body {
+position: relative;
+width: 100%;
+height: 100%;
+background: linear-gradient(160deg, #d8001c 0%, #78000c 100%);
+border: 2px solid var(--gold-accent);
+border-radius: 0 0 14px 14px;
+box-shadow:
+0 16px 38px rgba(0, 0, 0, 0.85),
+0 0 35px rgba(208, 0, 0, 0.6),
+inset 0 0 22px rgba(255, 215, 0, 0.22);
+overflow: hidden;
+z-index: 3;
+}
+
+/* လက်ဆောင်ဘူး အလယ်က ရွှေရောင်ဖဲကြိုး */
+.gift-box-body::before {
+content: "";
+position: absolute;
+left: 50%;
+top: 0;
+bottom: 0;
+width: 26px;
+background: linear-gradient(90deg, #d49b00, #ffd700, #fff3b0, #ffd700, #d49b00);
+transform: translateX(-50%);
+}
+
+.gift-box-body::after {
+content: "";
+position: absolute;
+top: 50%;
+left: 0;
+right: 0;
+height: 22px;
+background: linear-gradient(180deg, #d49b00, #ffd700, #fff3b0, #ffd700, #d49b00);
+transform: translateY(-50%);
+}
+
+/* လက်ဆောင်ဘူးအတွင်းမှ တောက်ပထွက်လာမည့် ရွှေရောင်အလင်းတန်း */
+.gift-inner-glow {
+position: absolute;
+top: -35px;
+left: 50%;
+transform: translateX(-50%) scale(0);
+width: 190px;
+height: 90px;
+background: radial-gradient(ellipse at center, rgba(255, 245, 190, 0.95) 0%, rgba(255, 215, 0, 0.55) 45%, transparent 75%);
+z-index: 2;
+pointer-events: none;
+transition: transform 0.7s ease-out, opacity 0.7s ease-out;
+}
+
+.gift-box-assembly.opened .gift-inner-glow {
+transform: translateX(-50%) scale(1.5);
+}
+
+.finale-caption-text {
+margin-top: 16px;
+font-family: "Noto Serif Myanmar", "Padauk", 'Poppins', sans-serif;
+font-size: clamp(0.95rem, 3.8vw, 1.18rem);
+font-weight: 700;
+color: #fff6dc;
+text-shadow: 0 0 14px rgba(255, 215, 0, 0.8), 0 2px 6px #000;
+letter-spacing: 0.04em;
+text-align: center;
+z-index: 25;
+min-height: 1.8em;
+}
+
+@media (max-width: 600px) {
+.time-machine {
+height: 96dvh;
+padding: 0.5rem 0.75rem;
+}
+.fingerprint-wrapper {
+bottom: 4.5dvh;
+gap: 0.45rem;
+}
+.fingerprint-btn {
+width: 72px;
+height: 72px;
+}
+.fingerprint-btn svg {
+width: 40px;
+height: 40px;
+}
+.to-love-story-btn {
+bottom: 4dvh;
+padding: 11px 24px;
+font-size: 0.78rem;
+}
+#love-story-container .glass-card {
+padding: 1.75rem 1.35rem;
+border-radius: 28px;
+width: 92%;
+}
+#love-story-container h1 {
+font-size: 1.9rem;
+}
+#love-story-container h2 {
+font-size: 1.55rem;
+}
+#love-story-container p {
+font-size: 0.98rem;
+line-height: 1.6;
+margin-bottom: 22px;
+}
+#love-story-container .big-text {
+font-size: 1.5rem;
+}
+#love-story-container .emoji {
+font-size: 42px;
+margin-bottom: 10px;
+}
+.photo-bouquet {
+width: 288px;
+height: 375px;
+bottom: 120px;
+}
+.bouquet-photo-stem {
+width: 66px;
+height: 82px;
+}
+.plushie-doll {
+width: 58px;
+height: 70px;
+}
+.gift-box-assembly {
+width: 132px;
+height: 108px;
+}
+.gift-box-lid {
+width: 148px;
+left: -8px;
+}
+}
+
+.error {
+position: fixed;
+inset: auto 10px 70px 10px;
+background: #260015;
+color: #ffd9f7;
+border: 1px solid #ff8ae5;
+border-radius: 10px;
+padding: 10px;
+font: 12px system-ui;
+display: none;
+}
+
+.time-machine::before {
+position: absolute;
+z-index: -1;
+inset: 10px;
+border: 2px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
+content: "";
+pointer-events: none;
+border-radius: 16px;
+}
+
+.time-machine__label,
+.time-machine__caption,
+.time-machine__status,
+.time-machine__footer {
+font-size: clamp(0.6rem, 1.8vw, 0.75rem);
+letter-spacing: 0.16em;
+flex: 0 0 auto;
+}
+
+.time-machine__label {
+color: var(--color-parchment-deep);
+}
+
+/* Clock face */
+.clock {
+position: relative;
+width: clamp(100px, 18dvh, 132px);
+height: clamp(100px, 18dvh, 132px);
+flex: 0 0 auto;
+border: 2.5px solid var(--color-gold-deep);
+border-radius: 50%;
+background:
+radial-gradient(circle, transparent 55%, #0008 100%),
+repeating-conic-gradient(
+from 0deg,
+var(--color-gold) 0deg 0.7deg,
+transparent 0.7deg 6deg
+),
+var(--color-umber);
+box-shadow:
+0 0 0 3px var(--color-umber),
+0 0 0 4px var(--color-gold-deep),
+0 0 20px #c99a5222,
+inset 0 0 18px #000a;
+}
+
+.clock.active {
+animation: clock-arrival var(--time-duration) var(--time-easing) both;
+}
+
+.clock::before {
+position: absolute;
+inset: 7px;
+border: 1px solid var(--color-gold-deep);
+border-radius: 50%;
+content: "";
+}
+
+.clock__ticks {
+position: absolute;
+inset: 11px;
+border-radius: 50%;
+background: repeating-conic-gradient(
+from 0deg,
+var(--color-gold-bright) 0deg 1.2deg,
+transparent 1.2deg 30deg
+);
+mask: radial-gradient(circle, transparent 0 83%, #000 84%);
+}
+
+/* Clock numerals */
+.clock__numerals span {
+position: absolute;
+top: 50%;
+left: 50%;
+color: var(--color-parchment);
+font-size: clamp(0.5rem, 1.5dvh, 0.68rem);
+transform:
+translate(-50%, -50%)
+rotate(calc(var(--i) * 30deg))
+translateY(calc(clamp(100px, 18dvh, 132px) * -0.37))
+rotate(calc(var(--i) * -30deg));
+}
+
+.clock__numerals span:nth-child(1)  { --i: 0; }
+.clock__numerals span:nth-child(2)  { --i: 1; }
+.clock__numerals span:nth-child(3)  { --i: 2; }
+.clock__numerals span:nth-child(4)  { --i: 3; }
+.clock__numerals span:nth-child(5)  { --i: 4; }
+.clock__numerals span:nth-child(6)  { --i: 5; }
+.clock__numerals span:nth-child(7)  { --i: 6; }
+.clock__numerals span:nth-child(8)  { --i: 7; }
+.clock__numerals span:nth-child(9)  { --i: 8; }
+.clock__numerals span:nth-child(10) { --i: 9; }
+.clock__numerals span:nth-child(11) { --i: 10; }
+.clock__numerals span:nth-child(12) { --i: 11; }
+
+/* Clock hands */
+.clock__hands {
+position: absolute;
+inset: 0;
+border-radius: 50%;
+}
+
+.clock__hand {
+position: absolute;
+bottom: 50%;
+left: 50%;
+width: 2px;
+border-radius: 50% 50% 0 0;
+background: var(--color-gold-bright);
+transform-origin: 50% 100%;
+box-shadow: 0 0 6px #f2d39444;
+}
+
+.clock__hand--hour {
+width: 4px;
+height: 25%;
+transform: rotate(30deg);
+}
+
+/* နာရီ၊ မိနစ်၊ စက္ကန့် လက်တံသုံးချောင်းကို အချိုးကျကျ လည်ပတ်ပြီး ၁၂ နာရီတိတိတွင် ရပ်တန့်စေခြင်း */
+.clock.active .clock__hand--hour {
+animation: spin-hour var(--time-duration) var(--time-easing) both;
+}
+
+.clock__hand--minute {
+height: 35%;
+transform: rotate(0deg);
+}
+
+.clock.active .clock__hand--minute {
+animation: spin-minute var(--time-duration) var(--time-easing) both;
+}
+
+.clock__hand--second {
+width: 1px;
+height: 39%;
+background: var(--color-red);
+transform: rotate(180deg);
+}
+
+.clock.active .clock__hand--second {
+animation: spin-second var(--time-duration) var(--time-easing) both;
+}
+
+.clock__pin {
+position: absolute;
+top: 50%;
+left: 50%;
+width: 10px;
+aspect-ratio: 1;
+border: 2px solid var(--color-gold-bright);
+border-radius: 50%;
+background: var(--color-umber);
+transform: translate(-50%, -50%);
+}
+
+/* Captions */
+.time-machine__caption {
+color: var(--color-gold);
+}
+
+/* Year & Date counter */
+.year-counter {
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 1rem;
+width: min(100%, 300px);
+padding: 0.35rem 0.8rem;
+flex: 0 0 auto;
+border-block: 1px solid var(--color-gold-deep);
+background: linear-gradient(
+90deg,
+transparent,
+#c99a5210,
+transparent
+);
+box-sizing: border-box;
+}
+
+.date-display {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding-right: 1rem;
+border-right: 1px solid color-mix(in srgb, var(--color-gold-deep) 60%, transparent);
+color: var(--color-parchment);
+}
+
+.year-counter__window,
+.date-counter__window {
+height: var(--year-row-height);
+overflow: hidden;
+color: var(--color-gold-bright);
+font-size: clamp(1.5rem, 4.2dvh, 2.3rem);
+font-variant-numeric: tabular-nums;
+line-height: var(--year-row-height);
+text-shadow: 0 0 18px #c99a5233;
+}
+
+.year-counter__track,
+.date-counter__track {
+display: flex;
+flex-direction: column;
+will-change: transform;
+transform: translate3d(0, 0, 0);
+}
+
+.year-counter__track.active {
+animation: random-year-spin var(--time-duration) cubic-bezier(0.25, 0.85, 0.35, 1) both;
+}
+
+.date-counter__track.active {
+animation: random-date-spin var(--time-duration) cubic-bezier(0.25, 0.85, 0.35, 1) both;
+}
+
+.year-counter__track span,
+.date-counter__track span {
+display: block;
+height: var(--year-row-height);
+flex: 0 0 var(--year-row-height);
+}
+
+/* Status indicator */
+.time-machine__status {
+display: flex;
+align-items: center;
+gap: 0.65rem;
+color: var(--color-parchment-deep);
+font-size: 0.65rem;
+}
+
+.time-machine__lamp {
+width: 7px;
+aspect-ratio: 1;
+border-radius: 50%;
+background: var(--color-lamp);
+box-shadow: 0 0 10px var(--color-lamp);
+}
+
+.time-machine__lamp.active {
+animation: lamp-pulse 1s ease-in-out infinite alternate;
+}
+
+/* Temporal Engage Button */
+.time-machine__btn {
+background: linear-gradient(135deg, var(--color-umber-soft), var(--color-umber));
+color: var(--color-gold-bright);
+border: 2px solid var(--color-gold);
+padding: 0.6rem 1.4rem;
+font-family: var(--font-type);
+font-size: 0.75rem;
+font-weight: bold;
+letter-spacing: 0.15em;
+cursor: pointer;
+border-radius: 4px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+transition: all 0.4s ease-in-out;
+opacity: 1;
+visibility: visible;
+}
+
+.time-machine__btn.hidden {
+opacity: 0;
+visibility: hidden;
+transform: scale(0.9);
+pointer-events: none;
+}
+
+.time-machine__btn:hover {
+background: linear-gradient(135deg, var(--color-gold-deep), var(--color-umber-soft));
+color: var(--color-shine);
+border-color: var(--color-gold-bright);
+box-shadow: 0 0 15px #c99a5244;
+}
+
+.time-machine__btn:active {
+transform: translateY(2px);
+}
+
+.time-machine__btn:disabled {
+opacity: 0.6;
+cursor: not-allowed;
+}
+
+.time-machine__footer {
+color: var(--color-gold-deep);
+font-family: var(--font-hand);
+letter-spacing: 0.05em;
+}
+
+/* Proportional Clock Hand Animations Landing Exactly at 12:00:00 (Multiple of 360deg) /
+@keyframes spin-hour {
+from {
+transform: rotate(30deg);
+}
+to {
+/ 30deg မှ 720deg (360 * 2) သို့ လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
+transform: rotate(720deg);
+}
+}
+
+@keyframes spin-minute {
+from {
+transform: rotate(0deg);
+}
+to {
+/* နာရီလက်တံထက် ၁၂ ဆ ပိုမြန်စွာ (8280deg = 360 * 23) လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
+transform: rotate(8280deg);
+}
+}
+
+@keyframes spin-second {
+from {
+transform: rotate(180deg);
+}
+to {
+/* အမြန်ဆုံးနှုန်းဖြင့် (51840deg = 360 * 144) လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
+transform: rotate(51840deg);
+}
+}
+
+/* အကွက်တစ်ကွက်စီရှိ ပုံ ၅ ပုံစီကို Random အရှိန်အနှေး/အမြန်၊ အပေါ်/အောက် Bounce များဖြင့် လှိမ့်တက်ပြီး နောက်ဆုံးပုံတွင် ကွက်တိရပ်တန့်မည့် Keyframes */
+@keyframes photo-roll-up {
+0% {
+transform: translate3d(0, 0%, 0);
+filter: brightness(1);
+}
+18% {
+transform: translate3d(0, calc(-100% * 0.42 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+34% {
+transform: translate3d(0, calc(-100% * 0.18 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1.15) contrast(1.08);
+}
+56% {
+transform: translate3d(0, calc(-100% * 0.78 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+72% {
+transform: translate3d(0, calc(-100% * 0.52 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1.12) contrast(1.06);
+}
+88% {
+transform: translate3d(0, calc(-100% * 0.94 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+100% {
+transform: translate3d(0, calc(-100% * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1);
+}
+}
+
+/* အကွက်တစ်ကွက်စီရှိ ပုံ ၅ ပုံစီကို Random အရှိန်အနှေး/အမြန်၊ အပေါ်/အောက် Bounce များဖြင့် လှိမ့်ဆင်းပြီး ပထမပုံတွင် ကွက်တိရပ်တန့်မည့် Keyframes */
+@keyframes photo-roll-down {
+0% {
+transform: translate3d(0, calc(-100% * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1);
+}
+20% {
+transform: translate3d(0, calc(-100% * 0.55 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+38% {
+transform: translate3d(0, calc(-100% * 0.82 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1.15) contrast(1.08);
+}
+58% {
+transform: translate3d(0, calc(-100% * 0.24 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+74% {
+transform: translate3d(0, calc(-100% * 0.46 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+filter: brightness(1.12) contrast(1.06);
+}
+90% {
+transform: translate3d(0, calc(-100% * 0.06 * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
+}
+100% {
+transform: translate3d(0, 0%, 0);
+filter: brightness(1);
+}
+}
+
+/* Year Counter ကို အပေါ်အောက် Random ခုန်ပေါက်လည်ပတ်စေပြီးမှ 2026 တွင် တိကျစွာ ရပ်တန့်စေမည့် Keyframes */
+@keyframes random-year-spin {
+0% {
+transform: translate3d(0, 0%, 0);
+}
+16% {
+transform: translate3d(0, calc(-100% * 0.45 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+32% {
+transform: translate3d(0, calc(-100% * 0.15 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+50% {
+transform: translate3d(0, calc(-100% * 0.76 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+66% {
+transform: translate3d(0, calc(-100% * 0.38 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+84% {
+transform: translate3d(0, calc(-100% * 0.92 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+100% {
+transform: translate3d(0, calc(-100% * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+}
+
+/* Date Counter ကိုလည်း Year Counter နှင့် မတူညီသော Random အချိုးအကွေ့များဖြင့် လည်ပတ်စေပြီးမှ 14 တွင် တိကျစွာ ရပ်တန့်စေမည့် Keyframes */
+@keyframes random-date-spin {
+0% {
+transform: translate3d(0, 0%, 0);
+}
+18% {
+transform: translate3d(0, calc(-100% * 0.62 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+36% {
+transform: translate3d(0, calc(-100% * 0.22 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+54% {
+transform: translate3d(0, calc(-100% * 0.85 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+72% {
+transform: translate3d(0, calc(-100% * 0.48 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+88% {
+transform: translate3d(0, calc(-100% * 0.95 * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+100% {
+transform: translate3d(0, calc(-100% * (var(--total-steps, 36) - 1) / var(--total-steps, 36)), 0);
+}
+}
+
+@keyframes clock-arrival {
+0%, 85% {
+filter: brightness(1);
+}
+94% {
+filter: brightness(1.8);
+}
+96% {
+filter: brightness(0.75);
+}
+100% {
+filter: brightness(1.2);
+}
+}
+
+@keyframes lamp-pulse {
+from {
+opacity: 0.45;
+}
+to {
+opacity: 1;
+}
+}
