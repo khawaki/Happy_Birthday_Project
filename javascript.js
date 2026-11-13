@@ -1188,15 +1188,15 @@ const loveStoryContainer = document.getElementById("love-story-container");
 
 // Upload လုပ်ပေးထားသော ပုံ (၉) ပုံ (VS Code နှင့် GitHub Repository ထဲတွင် ထားရှိရမည့် ပုံအမည်များ)
 const uploadedPhotos = [
-  "./photo1.jpg",
-  "./photo2.jpg",
-  "./photo3.jpg",
-  "./photo4.jpg",
-  "./photo5.jpg",
-  "./photo6.jpg",
-  "./photo7.jpg",
-  "./photo8.jpg",
-  "./photo9.jpg"
+  "photo1.jpg",
+  "photo2.jpg",
+  "photo3.jpg",
+  "photo4.jpg",
+  "photo5.jpg",
+  "photo6.jpg",
+  "photo7.jpg",
+  "photo8.jpg",
+  "photo9.jpg"
 ];
 
 // GitHub Pages (Linux Server) တွင် ပုံအမည် သို့မဟုတ် Folder လမ်းကြောင်း လွဲနေပါက အလိုအလျောက် ရှာဖွေပေးမည့် Helper Function
@@ -1753,18 +1753,15 @@ function initGalaxy() {
         depthWrite: false
       })
     );
-    // Nebula နောက်ခံစက်လုံးကို အနောက်ဆုံးအလွှာ (-10) တွင် အမြဲဆွဲစေခြင်းဖြင့် ဓာတ်ပုံများပေါ်သို့ မွဲပြာရောင် လုံးဝမဖုံးအုပ်နိုင်တော့ပါ
     nebulaSphere.renderOrder = -10;
     bgPhotoDomeGroup.add(nebulaSphere);
 
-    // ပုံတစ်ပုံချင်းစီကို Galaxy Theme နှင့် လိုက်ဖက်အောင် Cosmic Glow ဘောင်သွင်းပေးသည့် Function
     function createCosmicFramedPhotoTexture(imgSource, indexLabel) {
       const c = document.createElement('canvas');
       c.width = 512;
       c.height = 640;
       const ctx = c.getContext('2d');
       const tex = new THREE.CanvasTexture(c);
-      // Zoom အနီး/အဝေး ပြောင်းလဲချိန်တွင် Mipmap ကြောင့် ပုံအရောင် မှိန်/ဝါးမသွားစေရန် LinearFilter သတ်မှတ်ခြင်း
       tex.minFilter = THREE.LinearFilter;
       tex.magFilter = THREE.LinearFilter;
       tex.generateMipmaps = false;
@@ -1772,7 +1769,6 @@ function initGalaxy() {
       function drawCard(imageElement) {
         ctx.clearRect(0, 0, c.width, c.height);
 
-        // အပြင်ဘက် Cosmic Aura Glow (ပုံ၏ အပြင်ဘက် အနားသတ်တွင်သာ ရှိမည်)
         const outerGlow = ctx.createRadialGradient(256, 320, 180, 256, 320, 315);
         outerGlow.addColorStop(0, 'rgba(0, 0, 0, 0)');
         outerGlow.addColorStop(0.75, 'rgba(195, 125, 255, 0.28)');
@@ -1799,7 +1795,6 @@ function initGalaxy() {
         ctx.closePath();
         ctx.clip();
 
-        // ပုံ၏ အနောက်မှ အနက်ရောင်အခံကို အပြည့်ခံထားပေးခြင်းဖြင့် အနောက်က Nebula အရောင် လုံးဝမဖောက်နိုင်တော့ပါ
         ctx.fillStyle = '#000000';
         ctx.fillRect(pad, pad, w, h);
 
@@ -1823,8 +1818,6 @@ function initGalaxy() {
           ctx.fillRect(pad, pad, w, h);
         }
 
-        // ပုံပေါ်တွင် မွဲပြာပြာအရောင်အုပ်ခြင်း (Vignette / Color Tint) လုံးဝမထားတော့ဘဲ Original အရောင်အတိုင်း အပြည့်အဝ ကြည်လင်နေစေခြင်း
-        // ဘောင်လိုင်းလေးများ ပိုမိုပေါ်လွင်စေရန် (Bright Glowing Cosmic Rim)
         ctx.strokeStyle = 'rgba(255, 235, 255, 0.95)';
         ctx.lineWidth = 6;
         ctx.stroke();
@@ -1870,12 +1863,10 @@ function initGalaxy() {
       return tex;
     }
 
-    // ပုံ (၉) ပုံအတွက် Texture များကို တစ်ကြိမ်သာ ဖန်တီးပြီး 360° ပတ်ပတ်လည် အလွှာ (၃) လွှာတွင် မျှဝေသုံးစွဲခြင်း
     const cosmicPhotoTextures = uploadedPhotos.map((src, idx) =>
       createCosmicFramedPhotoTexture(src, idx + 1)
     );
 
-    // 360° စက်လုံးပတ်လည်တွင် အလွှာ ၃ လွှာလုံး၌ မူရင်းပုံအရောင်အတိုင်း 100% (opacity: 1.0) တိတိကျကျ ပေါ်နေစေခြင်း
     const bgRingConfigs = [
       { count: 9, radius: 195, y: 8,   panelW: 78, panelH: 98, tiltX: 0.0,   speed: -0.042, opacity: 1.0 },
       { count: 9, radius: 220, y: 86,  panelW: 72, panelH: 90, tiltX: 0.24,  speed:  0.028, opacity: 1.0 },
@@ -1889,12 +1880,10 @@ function initGalaxy() {
       const ringGroup = new THREE.Group();
       ringGroup.userData = { speed: ringCfg.speed, baseY: ringCfg.y };
 
-      // စက်ဝိုင်းအကွေးအတိုင်း သဘာဝကျကျ ကွေးညွှတ်နေသည့် Curved Panel Geometry
       const panelGeo = new THREE.PlaneGeometry(ringCfg.panelW, ringCfg.panelH, 16, 1);
       const posAttr = panelGeo.attributes.position;
       for (let k = 0; k < posAttr.count; k++) {
         const px = posAttr.getX(k);
-        // စက်လုံး၏ အတွင်းဘက်မျက်နှာပြင်အတိုင်း အနည်းငယ် ကွေးညွှတ်ပေးခြင်း
         const curveZ = -Math.pow(px / (ringCfg.panelW * 0.5), 2) * 4.2;
         posAttr.setZ(k, curveZ);
       }
@@ -1911,7 +1900,7 @@ function initGalaxy() {
           opacity: 1.0,
           depthWrite: true,
           depthTest: true,
-          toneMapped: false, // ACESFilmicToneMapping ကြောင့် ပုံအရောင် မွဲသွားခြင်းကို ကာကွယ်ပြီး မူရင်းအရောင်အတိုင်း ထားရှိခြင်း
+          toneMapped: false,
           side: THREE.DoubleSide
         });
         mat.userData = { baseOpacity: 1.0, phase: i * 0.7 + rIdx * 1.3 };
@@ -1924,7 +1913,6 @@ function initGalaxy() {
           ringCfg.y + Math.sin(i * 1.4) * 5.0,
           Math.sin(angle) * ringCfg.radius
         );
-        // အလယ်ဗဟိုရှိ ကင်မရာ/ဂလက်ဆီဘက်သို့ မျက်နှာမူထားစေခြင်း
         mesh.lookAt(0, ringCfg.y * 0.35, 0);
         ringGroup.add(mesh);
       }
@@ -1953,21 +1941,20 @@ function initGalaxy() {
       randoms[i * 3 + 1] = Math.random();
       randoms[i * 3 + 2] = Math.random();
 
-      // အမှုန်များကို ဂလက်ဆီတစ်ခုလုံးမှ ညီညာစွာ ရွေးထုတ်ပြီး စာသား (1.0)၊ မီးရှူးမီးပန်း (2.0) နှင့် နောက်ခံ ဂလက်ဆီ (0.0) အဖြစ် ခွဲခြားထားသည်
       if (i % 3 === 0 && textPtCounter < 21000 && numTextPoints > 0) {
-        isTextAttr[i] = 1.0; // စာသားဖော်မည့် အမှုန်
+        isTextAttr[i] = 1.0;
         const ptIdx = (textPtCounter % numTextPoints) * 3;
         targetPositions[i * 3]     = textPoints[ptIdx] + (Math.random() - 0.5) * 0.35;
         targetPositions[i * 3 + 1] = textPoints[ptIdx + 1] + (Math.random() - 0.5) * 0.35;
         targetPositions[i * 3 + 2] = textPoints[ptIdx + 2] + (Math.random() - 0.5) * 1.2;
         textPtCounter++;
       } else if (i % 7 === 1) {
-        isTextAttr[i] = 2.0; // Galaxy ထဲမှ ပစ်ဖောက်ပြီး Galaxy အမှုန်အဖြစ် ပြန်ကျသွားမည့် Fireworks အမှုန် (~7000 ခန့်)
+        isTextAttr[i] = 2.0;
         targetPositions[i * 3]     = 0;
         targetPositions[i * 3 + 1] = 0;
         targetPositions[i * 3 + 2] = 0;
       } else {
-        isTextAttr[i] = 0.0; // နောက်ခံ Galaxy အတိုင်း ဆက်ရှိနေပြီး နေရာလွတ်များကို ဖြည့်ပေးမည့် အမှုန်
+        isTextAttr[i] = 0.0;
         targetPositions[i * 3]     = 0;
         targetPositions[i * 3 + 1] = 0;
         targetPositions[i * 3 + 2] = 0;
@@ -2019,13 +2006,11 @@ function initGalaxy() {
             return a + b * cos( 6.28318 * (c * t + d) );
         }
 
-        // Shape 0: Galaxy Swarm (Seamless Space-Filling)
         vec3 getGalaxySwarm(float id, vec3 rnd, float fillProgress) {
             float arms = 5.0;
             float minR = 4.0;
             float maxR = 90.0;
 
-            // စာသားအတွက် ထွက်သွားသော အမှုန်များ၏ နေရာကို ကျန်ခဲ့သည့် Galaxy အမှုန်များက မသိမသာ လိုက်ဖြည့်ပေးခြင်း
             float radialDrift = sin(id * 317.13) * 0.045 * fillProgress;
             float normDist = clamp(pow(rnd.x, 0.76) + radialDrift, 0.0, 1.0);
             float dist = mix(minR, maxR, normDist);
@@ -2035,7 +2020,6 @@ function initGalaxy() {
             float spiralTwist = dist * 0.095;
             float orbitSpeed = 0.5;
 
-            // လက်တံများအတွင်း ပိုမိုပြန့်ကားသွားစေပြီး နေရာလွတ်များကို သဘာဝကျကျ ဖုံးအုပ်ပေးခြင်း
             float spreadBoost = 1.0 + fillProgress * 0.22;
             float armSpread = (rnd.z - 0.5) * (0.55 + normDist * 1.15) * spreadBoost;
             float angularFill = cos(id * 512.7) * 0.14 * fillProgress;
@@ -2049,24 +2033,19 @@ function initGalaxy() {
             return vec3(cos(angle) * dist, baseH + spiralWaveY, sin(angle) * dist);
         }
 
-        // Shape 1: "Happy Birthday Bae Bae" Text Position (Always Facing Camera / Billboard + Individual Particle Animation)
         vec3 getTextShape(float id, vec3 rnd, vec3 target) {
-            // စာသားတစ်ခုလုံး လှိုင်းတွန့်သလို ညင်သာစွာ လှုပ်ရှားမှု
             float waveY = sin(uTime * 1.8 + target.x * 0.12) * 0.35;
             float waveZ = cos(uTime * 1.5 + target.y * 0.12) * 0.35;
 
-            // အမှုန်တစ်ခုချင်းစီအတွက် ကိုယ်ပိုင် အမြန်နှုန်းနှင့် ဦးတည်ချက်ဖြင့် အနည်းငယ်စီ လှုပ်ရှားနေစေခြင်း (Individual Micro-motion)
             float speed = 2.2 + rnd.x * 3.0;
             float phaseX = id * 431.7 + rnd.x * PI * 2.0;
             float phaseY = id * 719.3 + rnd.y * PI * 2.0;
             float phaseZ = id * 913.1 + rnd.z * PI * 2.0;
 
-            // စာသားပုံစံ မပျက်ယွင်းဘဲ အမှုန်တစ်ခုချင်းစီ သဘာဝကျကျ လှုပ်ရှားနေမည့် အကွာအဝေး
             float jitterX = sin(uTime * speed + phaseX) * (0.18 + rnd.y * 0.25);
             float jitterY = cos(uTime * (speed * 1.15) + phaseY) * (0.18 + rnd.z * 0.25);
             float jitterZ = sin(uTime * (speed * 0.85) + phaseZ) * (0.4 + rnd.x * 0.6);
 
-            // စာသား၏ ဗဟိုမှတ် (0, 27.0, 0) ကို အခြေခံ၍ Camera ဘက်သို့ အမြဲမျက်နှာမူနေစေရန်နှင့် ဖုန်းမျက်နှာပြင်အရွယ်အစားအလိုက် ကွက်တိဖြစ်စေရန် တွက်ချက်ခြင်း
             vec3 center = vec3(0.0, 25.5, 0.0);
             float localX = (target.x * uTextScale) + jitterX * uTextScale;
             float localY = ((target.y - 27.0) * uTextScale) + (waveY + jitterY) * uTextScale;
@@ -2074,7 +2053,6 @@ function initGalaxy() {
 
             vec3 worldPos = center + uCamRight * localX + uCamUp * localY + uCamForward * localZ;
 
-            // Galaxy Group ၏ လည်ပတ်မှုကို ပြန်ချေဖျက်ပေးခြင်း (Counter-rotate)
             float c = cos(-uGalaxyRotY);
             float s = sin(-uGalaxyRotY);
             return vec3(
@@ -2089,17 +2067,15 @@ function initGalaxy() {
         }
 
         void main() {
-            float isText = step(0.5, aIsText) * step(aIsText, 1.5); // aIsText == 1.0
-            float isFirework = step(1.5, aIsText);                  // aIsText == 2.0
-            float isBgGalaxy = 1.0 - step(0.5, aIsText);            // aIsText == 0.0
+            float isText = step(0.5, aIsText) * step(aIsText, 1.5);
+            float isFirework = step(1.5, aIsText);
+            float isBgGalaxy = 1.0 - step(0.5, aIsText);
 
             float easedProgress = cubicInOut(uMorphProgress);
-            // ကျန်ခဲ့သော Galaxy အမှုန်များသည် နေရာလွတ်များကို ဖြည့်ရန် fillProgress ကို အသုံးပြုမည်
             float fillFactor = easedProgress * isBgGalaxy;
 
             vec3 p1 = getGalaxySwarm(aId, aRandom, fillFactor);
             
-            // Mouse Tilt ကို Galaxy အမှုန်များ (p1) တွင်သာ သက်ရောက်စေမည်
             float tiltX = uMouse.y * 0.18;
             float tiltZ = -uMouse.x * 0.18;
             mat3 rotX = mat3(
@@ -2116,15 +2092,12 @@ function initGalaxy() {
 
             vec3 p2 = getTextShape(aId, aRandom, aTargetPos);
 
-            // စာသားဖော်မည့် အမှုန်များသာ အပေါ်သို့ တက်သွားမည်
             float effectiveMorph = easedProgress * isText;
             vec3 finalPos = mix(p1, p2, effectiveMorph);
 
-            // စာသားအဖြစ် ပြောင်းလဲချိန်တွင် ဂလက်ဆီထဲမှ လှပစွာ ဝဲပျံတက်သွားသည့် အကျိုးသက်ရောက်မှု
             float swirlMask = sin(uMorphProgress * PI) * isText;
             finalPos += vec3(0.0, swirlMask * 4.5, swirlMask * 3.0);
 
-            // Galaxy ဘေးနားက ပတ်နေတဲ့ အမှုန်အရောင်နှင့် "Happy Birthday Bae Bae" စာသားအမှုန်အရောင် တစ်ထပ်တည်းဖြစ်စေခြင်း
             vec3 colGalaxy = palette(aRandom.x * 0.8 + uTime * 0.04, vec3(0.75, 0.55, 0.85), vec3(0.35, 0.3, 0.45), vec3(1.0, 1.0, 1.0), vec3(0.15, 0.35, 0.68));
             vec3 colText = colGalaxy;
             vColor = mix(colGalaxy, colText, effectiveMorph);
@@ -2138,32 +2111,27 @@ function initGalaxy() {
             float textSize = (3.0 + aRandom.x * 2.0) * textPulse;
             float finalPointSize = mix(baseSize, textSize, effectiveMorph);
 
-            // ====== GALAXY TO FIREWORKS TO GALAXY CYCLE ======
             if (isFirework > 0.5 && uMorphProgress > 0.01) {
-                float fwGroup = floor(aId * 8.0); // မီးရှူးမီးပန်း ၈ ခု အလှည့်ကျ ပစ်ဖောက်မည်
-                float cycleDur = 5.0;             // တစ်ကြိမ်ပစ်ဖောက်ပြီး Galaxy သို့ ပြန်ပေါင်းစည်းချိန် ၅ စက္ကန့်
+                float fwGroup = floor(aId * 8.0);
+                float cycleDur = 5.0;
                 float localTime = uTime + fwGroup * 0.85;
                 float cycleIdx = floor(localTime / cycleDur);
-                float t = fract(localTime / cycleDur); // 0.0 -> 1.0
+                float t = fract(localTime / cycleDur);
 
-                // ပစ်ဖောက်မည့် ဘေးဘက်နှင့် ပတ်ပတ်လည် နေရာများ (စာသား၏ ဘေးတစ်ဖက်တစ်ချက်ကို ဦးစားပေးထားသည်)
                 float side = mod(fwGroup, 2.0) == 0.0 ? -1.0 : 1.0;
                 float seed = fwGroup * 17.3 + cycleIdx * 31.7;
                 float launchX = side * (32.0 + 28.0 * fract(sin(seed) * 437.5));
                 float launchZ = (fract(cos(seed * 1.3) * 219.3) - 0.5) * 65.0;
                 float burstHeight = 20.0 + 20.0 * fract(sin(seed * 2.1) * 113.1);
 
-                // Galaxy ၏ လက်ရှိလည်ပတ်နေသော နေရာမှ စတင်ထွက်ခွာပြီး ပစ်မှတ်နေရာသို့ ပစ်ဖောက်ရန်
                 vec3 launchBase = vec3(launchX, 0.0, launchZ);
                 vec3 apexWorld = vec3(launchX, burstHeight, launchZ);
 
-                // Camera နှင့် World Space အတွက် Galaxy လည်ပတ်မှုကို ချိန်ညှိခြင်း
                 float c = cos(-uGalaxyRotY);
                 float s = sin(-uGalaxyRotY);
                 vec3 launchLocal = vec3(launchBase.x * c + launchBase.z * s, 0.0, -launchBase.x * s + launchBase.z * c);
                 vec3 apexLocal = vec3(apexWorld.x * c + apexWorld.z * s, burstHeight, -apexWorld.x * s + apexWorld.z * c);
 
-                // 3D စက်လုံးပုံစံ ပေါက်ကွဲထွက်မည့် ဦးတည်ချက် (Spherical Burst Direction)
                 float theta = aRandom.x * PI * 2.0;
                 float phi = acos(2.0 * aRandom.y - 1.0);
                 float speed = (10.0 + aRandom.z * 16.0) * (0.65 + 0.35 * fract(sin(aId * 999.0) * 100.0));
@@ -2173,10 +2141,9 @@ function initGalaxy() {
                     sin(phi) * sin(theta)
                 ) * speed;
 
-                // အရောင်စုံ မီးရှူးမီးပန်း အရောင်များ (Multi-color Rainbow Palette per Burst + Particle Variation)
                 float hue = fract(seed * 0.19 + aRandom.z * 0.28);
                 vec3 fwCol = palette(hue, vec3(0.6, 0.6, 0.6), vec3(0.45, 0.45, 0.45), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.33, 0.67));
-                fwCol = mix(fwCol, vec3(1.0, 0.97, 0.88), 0.25); // ပိုမိုတောက်ပစေရန် အဖြူ/ရွှေရောင် အနည်းငယ်ရောစပ်ခြင်း
+                fwCol = mix(fwCol, vec3(1.0, 0.97, 0.88), 0.25);
 
                 vec3 fwPos = p1;
                 vec3 targetCol = colGalaxy;
@@ -2184,17 +2151,14 @@ function initGalaxy() {
                 float targetSize = baseSize;
 
                 if (t < 0.16) {
-                    // အဆင့် (၁): Galaxy အမှုန်များ စုစည်းလာပြီး မီးရှူးပစ်မည့်နေရာသို့ စီးဝင်သွားခြင်း
                     float p = smoothstep(0.0, 0.16, t);
                     fwPos = mix(p1, launchLocal, p);
                     targetCol = mix(colGalaxy, vec3(1.0, 0.92, 0.65), p);
                     targetAlpha = mix(baseAlpha, 0.95, p);
                     targetSize = mix(baseSize, 3.6, p);
                 } else if (t < 0.34) {
-                    // အဆင့် (၂): Galaxy ထဲမှ အပေါ်သို့ အရှိန်ဖြင့် ပစ်ဖောက်တက်သွားခြင်း (Rocket Ascent Trail)
                     float p = (t - 0.16) / 0.18;
                     float easeOut = 1.0 - pow(1.0 - p, 2.2);
-                    // အမြီးတန်းလေး ဖြစ်နေစေရန် အမှုန်တစ်ခုချင်းစီ အနည်းငယ် နောက်ကျပြီး လိုက်တက်လာခြင်း
                     float trailLag = aRandom.z * 0.18;
                     float rocketP = clamp(easeOut - trailLag, 0.0, 1.0);
                     vec3 spiralJitter = vec3(cos(p * 25.0 + aId * 50.0), 0.0, sin(p * 25.0 + aId * 50.0)) * (1.0 - p) * 1.2;
@@ -2203,19 +2167,16 @@ function initGalaxy() {
                     targetAlpha = 1.0;
                     targetSize = 4.2;
                 } else if (t < 0.78) {
-                    // အဆင့် (၃): အရောင်စုံ မီးရှူးမီးပန်း ပေါက်ကွဲပြီး အောက်သို့ လှပစွာ ပြန်ကျလာခြင်း (Explosion & Gravity Fall)
                     float p = (t - 0.34) / 0.44;
-                    float expand = 1.0 - pow(1.0 - p, 2.6); // လေထုခုခံအားကြောင့် ဖြာထွက်မှု တဖြည်းဖြည်း နှေးသွားခြင်း
-                    float gravity = 28.0 * p * p;           // ကမ္ဘာ့ဆွဲအားဖြင့် အောက်သို့ ပြန်ကျလာခြင်း
+                    float expand = 1.0 - pow(1.0 - p, 2.6);
+                    float gravity = 28.0 * p * p;
                     fwPos = apexLocal + burstDir * expand + vec3(0.0, -gravity, 0.0);
 
-                    // မီးပွားလေးများ တဖျတ်ဖျတ် လင်းလက်နေခြင်း (Sparkle/Glitter Effect)
                     float sparkle = 0.55 + 0.45 * sin(uTime * 28.0 + aId * 1200.0);
                     targetCol = mix(vec3(1.0), fwCol, smoothstep(0.0, 0.22, p));
                     targetAlpha = mix(1.0, 0.65, p) * sparkle;
                     targetSize = mix(5.2, 2.6, p);
                 } else {
-                    // အဆင့် (၄): အောက်သို့ ပြန်ကျလာသော မီးပွားအမှုန်များ မူလ Galaxy အမှုန်များအဖြစ် ပြန်လည်ပေါင်းစည်းသွားခြင်း
                     float p = (t - 0.78) / 0.22;
                     float smoothReturn = smoothstep(0.0, 1.0, p);
                     vec3 fallenPos = apexLocal + burstDir + vec3(0.0, -28.0, 0.0);
@@ -2225,14 +2186,12 @@ function initGalaxy() {
                     targetSize = mix(2.6, baseSize, smoothReturn);
                 }
 
-                // စာသားပေါ်လာသည့် အချိန်နှင့်အတူ မီးရှူးမီးပန်းများ စတင်ပေါ်ပေါက်လာစေရန်
                 finalPos = mix(p1, fwPos, easedProgress);
                 vColor = mix(colGalaxy, targetCol, easedProgress);
                 vAlpha = mix(clamp(baseAlpha, 0.0, 1.0), targetAlpha, easedProgress);
                 finalPointSize = mix(baseSize, targetSize, easedProgress);
             }
 
-            // ====== CRIMSON RED TRANSFORMATION (BEFORE ENTERING LOVE STORY) ======
             if (uRedTransition > 0.001) {
                 float rProg = smoothstep(0.0, 1.0, uRedTransition);
                 vec3 crimsonCol = mix(
@@ -2243,7 +2202,6 @@ function initGalaxy() {
                 vColor = mix(vColor, crimsonCol, rProg);
                 vAlpha = mix(vAlpha, 1.0, rProg * 0.75);
                 finalPointSize *= (1.0 + rProg * 0.65);
-                // အမှုန်များအားလုံး အနီရောင်ပြောင်းရင်း ညင်သာစွာ လွင့်ပျံတက်သွားစေခြင်း
                 finalPos.y += rProg * rProg * (8.0 + aRandom.y * 12.0);
             }
 
@@ -2290,7 +2248,6 @@ function initGalaxy() {
       }
     }, { passive: true });
 
-    // Black hole core
     const coreR=12;
     const coreTexCanvas=document.createElement('canvas'); coreTexCanvas.width=coreTexCanvas.height=256;
     const cg=coreTexCanvas.getContext('2d'); const grd=cg.createRadialGradient(128,128,10,128,128,128);
@@ -2301,11 +2258,10 @@ function initGalaxy() {
     const photonRing=new THREE.Mesh(new THREE.RingGeometry(coreR*1.05, coreR*1.18, 128), new THREE.MeshBasicMaterial({ color:0xEAAEFF, transparent:true, opacity:0.95, side:THREE.DoubleSide }));
     photonRing.rotation.x=-Math.PI/2; photonRing.renderOrder=0.5; scene.add(photonRing);
 
-    // Morph Animation State (Galaxy to Text transition)
     let galaxyClockStarted = false;
     let morphStartTime = null;
-    const morphDuration = 4.2; // 4.2 စက္ကန့်အတွင်း အမှုန်အချို့ စာသားပုံစံသို့ ပြောင်းလဲမည်
-    const morphDelay = 2.6;    // Galaxy မသိမသာ ပေါ်ထွက်လာပြီးနောက် စာသားစတင်စုစည်းမည်
+    const morphDuration = 4.2;
+    const morphDelay = 2.6;
 
     const shaderClock = new THREE.Clock(false);
     window.startGalaxyEntrance = function() {
@@ -2315,7 +2271,6 @@ function initGalaxy() {
       }
     };
 
-    // Red Transition State (Galaxy to Love Story transition)
     let redTransitionActive = false;
     let redStartTime = null;
     const redDuration = 2.4;
@@ -2345,7 +2300,6 @@ function initGalaxy() {
       mouse.x += (targetMouse.x - mouse.x) * delta * 2.0;
       mouse.y += (targetMouse.y - mouse.y) * delta * 2.0;
 
-      // Galaxy စတင်ပေါ်ထွက်ချိန်တွင် အဝေး/အပေါ်စီးမှ ညင်သာစွာ ဆွဲဝင်လာသည့် Subtle Camera Glide
       if (galaxyClockStarted && elapsedTime < 2.6) {
         const glideP = Math.min(1.0, elapsedTime / 2.6);
         const easeOut = 1.0 - Math.pow(1.0 - glideP, 3.0);
@@ -2366,7 +2320,6 @@ function initGalaxy() {
         let rProg = Math.min(1.0, (elapsedTime - redStartTime) / redDuration);
         particleMaterial.uniforms.uRedTransition.value = rProg;
 
-        // Photon Ring၊ Phrases များ၊ 360 Background ပုံများနှင့် နောက်ခံအရောင်ပါ အနီရောင်သို့ တဖြည်းဖြည်း ပြောင်းလဲစေခြင်း
         photonRing.material.color.lerpColors(origRingColor, redRingColor, rProg);
         renderer.setClearColor(origClearColor.clone().lerp(redClearColor, rProg), 1);
         for (let i = 0; i < phraseSprites.length; i++) {
@@ -2377,7 +2330,6 @@ function initGalaxy() {
           bgPhotoMaterials[i].opacity = bgPhotoMaterials[i].userData.baseOpacity * (1.0 - rProg * 0.55);
         }
       } else {
-        // 360° Background ပုံများ အလင်းအမှောင် မပြောင်းဘဲ 100% Original အရောင်အတိုင်း အမြဲကြည်လင်နေစေခြင်း
         for (let i = 0; i < bgPhotoMaterials.length; i++) {
           bgPhotoMaterials[i].opacity = 1.0;
         }
@@ -2386,7 +2338,6 @@ function initGalaxy() {
       const rotY = elapsedTime * 0.05;
       galaxy.rotation.y = rotY;
 
-      // 360° Background ဓာတ်ပုံကွင်းများ (၃) ခုလုံး ကိုယ်ပိုင်အမြန်နှုန်းဖြင့် ညင်သာစွာ ပတ်လည်လည်ပတ်နေစေခြင်း
       nebulaSphere.rotation.y = -elapsedTime * 0.015;
       for (let i = 0; i < bgPhotoRings.length; i++) {
         const rg = bgPhotoRings[i];
@@ -2396,7 +2347,6 @@ function initGalaxy() {
 
       controls.update();
 
-      // ကင်မရာ၏ တည်နေရာနှင့် မျက်နှာမူရာ (Basis Vectors) ကို ယူ၍ စာသားအား ကင်မရာဘက်သို့ အမြဲလှည့်ထားစေခြင်း
       camera.updateMatrixWorld();
       camRight.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
       camUp.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
@@ -2461,14 +2411,13 @@ function initGalaxy() {
   } catch(e) { showError('Error cargando la galaxia: '+e.message); console.error(e); }
 }
 
-// ====== 3D MUSIC PLAYER LOGIC (REPLACING YOUTUBE API) ======
+// ====== 3D MUSIC PLAYER LOGIC ======
 const songs = [
   {
     name: "Happy Birthday Bae Bae",
     artist: "Special Wish",
-    // GitHub Pages / Custom Domain တွင် CORS Error လုံးဝမတက်စေရန် သီချင်းဖိုင်ကို Project Folder ထဲတွင် song.mp3 အမည်ဖြင့် ထည့်သွင်းအသုံးပြုပါ
     source: "./song.mp3", 
-    cover: "photo1.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
+    cover: "./photo1.jpg"
   }
 ];
 let currentSongId = 0;
@@ -2484,20 +2433,37 @@ const playPauseBtn = document.getElementById("playPauseBtn");
 const playIcon = document.getElementById("playIcon");
 const pauseIcon = document.getElementById("pauseIcon");
 
+// GitHub ပေါ်တွင် song.mp3 အမည် အကြီး/အသေး သို့မဟုတ် လမ်းကြောင်း ကွဲနေပါက အလိုအလျောက် ရှာဖွေပေးခြင်း
+const songCandidates = ["./song.mp3", "song.mp3", "./Song.mp3", "Song.mp3", "./SONG.MP3", "./music/song.mp3", "./assets/song.mp3"];
+let songCandidateIdx = 0;
+
+if (songEl) {
+  songEl.addEventListener("error", () => {
+    if (songCandidateIdx < songCandidates.length) {
+      songEl.src = songCandidates[songCandidateIdx++];
+      songEl.load();
+      songEl.play().catch(() => {});
+    }
+  });
+}
+
 function updateSongInfo() {
   const currentSong = songs[currentSongId];
   songNameEl.textContent = currentSong.name;
   songArtistEl.textContent = currentSong.artist;
-  if (!songEl.src || !songEl.src.includes(currentSong.source)) {
+  if (!songEl.getAttribute("src")) {
     songEl.src = currentSong.source;
+    songEl.load();
   }
 }
+
+// စာမျက်နှာ စဖွင့်ကတည်းက ./song.mp3 ကို ကြိုတင် Load လုပ်ထားခြင်း
+updateSongInfo();
 
 function initMusicPlayerBackground() {
   if (sketchCreated) return;
   sketchCreated = true;
   
-  // 1. Initialize Kokomi Shader Background (Matching Galaxy/Love Story Red-Purple Theme)
   const fragmentShader = `
     uniform vec3 uTopLeftColor;
     uniform vec3 uTopRightColor;
@@ -2578,7 +2544,6 @@ function initMusicPlayerBackground() {
     sketch.create();
   } catch(e) { console.warn("Kokomi BG warning", e); }
 
-  // 2. Initialize Swiper Cover Background
   const swiperEl = document.querySelector("swiper-container");
   swiperEl.innerHTML = songs.map(song => `<swiper-slide><img src="${song.cover}" onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src='./photo1.JPG';}else{this.onerror=null;this.src='https://placehold.co/300x300/4a0000/ffd700?text=Cover';}"></swiper-slide>`).join("");
   Object.assign(swiperEl, { initialSlide: currentSongId });
@@ -2604,7 +2569,6 @@ function initMusicPlayerBackground() {
   calcDepthRaf();
 }
 
-// Music Player Event Listeners
 songEl.addEventListener("timeupdate", () => {
   if (!songEl.paused) progressEl.value = songEl.currentTime;
 });
@@ -2620,10 +2584,22 @@ songEl.addEventListener("ended", () => {
 
 const playSong = () => {
   updateSongInfo();
-  songEl.play().then(() => {
-    playIcon.classList.add("hidden");
-    pauseIcon.classList.remove("hidden");
-  }).catch(e => console.warn("Audio play blocked by browser:", e));
+  songEl.muted = false;
+  songEl.volume = 1.0;
+  const playPromise = songEl.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      playIcon.classList.add("hidden");
+      pauseIcon.classList.remove("hidden");
+    }).catch(e => {
+      console.warn("Audio play retry:", e);
+      songEl.load();
+      songEl.play().then(() => {
+        playIcon.classList.add("hidden");
+        pauseIcon.classList.remove("hidden");
+      }).catch(() => {});
+    });
+  }
 };
 const pauseSong = () => {
   songEl.pause();
@@ -2641,23 +2617,18 @@ progressEl.addEventListener("change", () => {
   playSong();
 });
 
-// ဓာတ်ပုံပန်းစည်း (Photo Bouquet) အတွင်း သူမ၏ ပုံ (၉) ပုံကို ပန်းစည်းပုံသဏ္ဌာန် စီစဉ်တည်ဆောက်ပေးခြင်း
 function buildPhotoBouquet() {
   const bouquetGrid = document.getElementById('bouquetPhotosGrid');
   if (!bouquetGrid || bouquetGrid.children.length > 0) return;
 
-  // ပန်းစည်းတစ်ခုကဲ့သို့ အပေါ်၊ အလယ်၊ အောက် အလွှာလိုက် ဖြာထွက်နေမည့် Coordinates များ
   const stemPositions = [
-    // အပေါ်ဆုံးအလွှာ (Top Crown Row)
     { x: -72, y: -158, rot: -18, scale: 0.94, z: 2 },
     { x:   0, y: -176, rot:   0, scale: 1.02, z: 3 },
     { x:  72, y: -158, rot:  18, scale: 0.94, z: 2 },
-    // အလယ်အလွှာ (Middle Wide Row)
     { x: -100, y: -88, rot: -26, scale: 0.92, z: 4 },
     { x:  -34, y: -98, rot:  -8, scale: 1.0,  z: 5 },
     { x:   34, y: -98, rot:   8, scale: 1.0,  z: 5 },
     { x:  100, y: -88, rot:  26, scale: 0.92, z: 4 },
-    // အောက်ခြေအရှေ့အလွှာ (Lower Focal Row)
     { x: -46, y: -24, rot: -10, scale: 1.05, z: 6 },
     { x:  46, y: -24, rot:  10, scale: 1.05, z: 6 }
   ];
@@ -2682,7 +2653,6 @@ function buildPhotoBouquet() {
   });
 }
 
-// သီချင်းပြီးဆုံးချိန် (သို့မဟုတ် ခလုတ်နှိပ်ချိန်) တွင် လက်ဆောင်ထုပ် -> အရုပ်ကလေးများ -> ဓာတ်ပုံပန်းစည်း အစဉ်လိုက် ပေါ်ထွက်လာမည့် Sequence
 window.triggerGiftFinaleSequence = function() {
   if (giftFinaleTriggered) return;
   giftFinaleTriggered = true;
@@ -2705,7 +2675,6 @@ window.triggerGiftFinaleSequence = function() {
     giftStage.classList.add('visible');
   }
 
-  // အဆင့် (၁): လက်ဆောင်ထုပ်လေး ပေါ်လာပြီး လှုပ်ခါနေခြင်း
   setTimeout(() => {
     if (giftBox) {
       giftBox.classList.add('appear', 'shaking');
@@ -2715,7 +2684,6 @@ window.triggerGiftFinaleSequence = function() {
     }
   }, 300);
 
-  // အဆင့် (၂): လက်ဆောင်ထုပ် ပွင့်သွားပြီး အရုပ်ကလေးများ အရင်ထွက်လာကာ နောက်ဆုံးမှ ဓာတ်ပုံပန်းစည်း ပေါ်လာခြင်း
   setTimeout(() => {
     openGiftBoxAndRevealAll();
   }, 2100);
@@ -2735,7 +2703,6 @@ function openGiftBoxAndRevealAll() {
     giftBox.classList.add('opened');
   }
 
-  // အရုပ်ကလေးများ လက်ဆောင်ထုပ်ထဲမှ တစ်ကောင်ချင်းစီ ခုန်ထွက်လာခြင်း
   if (captionText) {
     captionText.textContent = "ချစ်စရာ အရုပ်ကလေးတွေ ထွက်လာပါပြီ... 🧸🐰🐱";
   }
@@ -2745,7 +2712,6 @@ function openGiftBoxAndRevealAll() {
     }, 250 + idx * 220);
   });
 
-  // အရုပ်ကလေးများ ထွက်လာပြီးနောက် နောက်ဆုံးတွင် လက်ဆောင်ထုပ်ထဲမှ ဓာတ်ပုံပန်းစည်းကြီး ပေါ်ထွက်လာခြင်း
   setTimeout(() => {
     if (photoBouquet) {
       photoBouquet.classList.add('bloom');
@@ -2770,9 +2736,8 @@ function updateProgress() {
   progressBar.style.width = percent + "%";
 }
 
-// ပထမဆုံး ဆုတောင်းစာ ("Open Wishes 🎁") ကို နှိပ်လိုက်သည့်အချိန်တွင် သီချင်းစတင်ဖွင့်ပြီး နောက်တစ်မျက်နှာသို့ သွားမည်
 window.openFirstWishAndPlayMusic = function() {
-  playSong();
+  if (songEl.paused) playSong();
   document.getElementById('music-player-controls').classList.add('visible');
   window.next();
 };
@@ -2807,7 +2772,6 @@ function initLoveStory() {
   resize();
 
   const bgBirthdaySigns = [];
-  // Happy Birthday နှင့် သက်ဆိုင်သော သင်္ကေတအမျိုးအစားများ (ကိတ်မုန့်၊ ပူဖောင်း၊ လက်ဆောင်ဘူး၊ ကြယ်ပွင့်၊ သရဖူ)
   const signTypes = ['cake', 'balloon', 'gift', 'sparkle', 'crown'];
 
   function createBirthdaySign() {
@@ -2824,7 +2788,6 @@ function initLoveStory() {
     });
   }
 
-  // မူလအရောင် (#ff4d6d နှင့် ရွှေရောင်အလင်း #ffd700) ကို အသုံးပြု၍ Happy Birthday Sign ပုံလေးများ ဆွဲသားပေးသည့် Function
   function drawSignShape(ctx, item) {
     const s = item.size;
     ctx.save();
@@ -2837,12 +2800,10 @@ function initLoveStory() {
     ctx.lineJoin = 'round';
 
     if (item.type === 'balloon') {
-      // မွေးနေ့ ပူဖောင်းပုံ (Birthday Balloon)
       ctx.beginPath();
       ctx.ellipse(0, 0, s * 0.62, s * 0.78, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // ပူဖောင်းအောက်ခြေ အထုံးလေး
       ctx.beginPath();
       ctx.moveTo(-s * 0.14, s * 0.88);
       ctx.lineTo(s * 0.14, s * 0.88);
@@ -2850,27 +2811,21 @@ function initLoveStory() {
       ctx.closePath();
       ctx.fill();
 
-      // ပူဖောင်းကြိုးလေး
       ctx.beginPath();
       ctx.moveTo(0, s * 0.88);
       ctx.quadraticCurveTo(s * 0.25, s * 1.25, -s * 0.12, s * 1.6);
       ctx.stroke();
 
-      // အလင်းပြန်နေသည့် အစက်လေး
       ctx.fillStyle = 'rgba(255, 215, 0, 0.55)';
       ctx.beginPath();
       ctx.ellipse(-s * 0.22, -s * 0.25, s * 0.1, s * 0.2, -0.3, 0, Math.PI * 2);
       ctx.fill();
 
     } else if (item.type === 'cake') {
-      // မွေးနေ့ကိတ်မုန့် နှင့် ဖယောင်းတိုင်မီး (Birthday Cake with Candle)
       ctx.fillRect(-s * 0.7, s * 0.1, s * 1.4, s * 0.55);
       ctx.fillRect(-s * 0.5, -s * 0.35, s * 1.0, s * 0.45);
-
-      // ဖယောင်းတိုင်
       ctx.fillRect(-s * 0.08, -s * 0.72, s * 0.16, s * 0.37);
 
-      // ဖယောင်းတိုင်မီးတောက် (ရွှေဝါရောင်အလင်း)
       ctx.fillStyle = '#ffd700';
       ctx.beginPath();
       ctx.moveTo(0, -s * 1.05);
@@ -2879,11 +2834,9 @@ function initLoveStory() {
       ctx.fill();
 
     } else if (item.type === 'gift') {
-      // မွေးနေ့လက်ဆောင်ဘူး (Birthday Gift Box & Ribbon)
       ctx.fillRect(-s * 0.55, -s * 0.35, s * 1.1, s * 0.9);
       ctx.fillRect(-s * 0.64, -s * 0.55, s * 1.28, s * 0.24);
 
-      // ဖဲကြိုးလိုင်းနှင့် ဖဲပြား (Gold Accent)
       ctx.fillStyle = '#ffd700';
       ctx.fillRect(-s * 0.1, -s * 0.55, s * 0.2, s * 1.1);
       ctx.fillRect(-s * 0.55, -s * 0.02, s * 1.1, s * 0.16);
@@ -2895,7 +2848,6 @@ function initLoveStory() {
       ctx.stroke();
 
     } else if (item.type === 'crown') {
-      // မွေးနေ့ရှင် သရဖူလေး (Birthday Crown)
       ctx.beginPath();
       ctx.moveTo(-s * 0.65, s * 0.35);
       ctx.lineTo(-s * 0.75, -s * 0.35);
@@ -2907,7 +2859,6 @@ function initLoveStory() {
       ctx.closePath();
       ctx.fill();
 
-      // သရဖူထိပ်က ရတနာအစက်လေးများ
       ctx.fillStyle = '#ffd700';
       ctx.beginPath();
       ctx.arc(-s * 0.75, -s * 0.42, s * 0.09, 0, Math.PI * 2);
@@ -2916,7 +2867,6 @@ function initLoveStory() {
       ctx.fill();
 
     } else {
-      // ၄ ထောင့် ကြယ်ပွင့်လေး (Birthday Sparkle Star)
       ctx.beginPath();
       for (let i = 0; i < 8; i++) {
         const angle = (i * Math.PI) / 4;
@@ -2961,7 +2911,7 @@ function initLoveStory() {
   drawBirthdaySigns();
 }
 
-// Galaxy မှ Birthday Wishes သို့ ကူးပြောင်းသည့် ခလုတ်နှိပ်ချိန် လုပ်ဆောင်ချက်
+// Galaxy မှ Birthday Wishes သို့ ကူးပြောင်းသည့် ခလုတ် ("Birthday Wishes 🎂") နှိပ်ချိန် လုပ်ဆောင်ချက်
 let loveTransitionTriggered = false;
 toLoveStoryBtn.addEventListener("click", () => {
   if (loveTransitionTriggered) return;
@@ -2969,6 +2919,10 @@ toLoveStoryBtn.addEventListener("click", () => {
 
   toLoveStoryBtn.classList.add("activating");
   toLoveStoryBtn.textContent = "OPENING WISHES 🎂";
+
+  // ခလုတ်နှိပ်လိုက်သည်နှင့် Browser User Gesture အတွင်းမှာပင် ./song.mp3 ကို တိုက်ရိုက်စတင်ဖွင့်ပေးမည်
+  playSong();
+  document.getElementById('music-player-controls').classList.add('visible');
 
   if (window.triggerRedGalaxyTransition) {
     window.triggerRedGalaxyTransition(() => {
