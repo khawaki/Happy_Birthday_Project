@@ -3,11 +3,14 @@ import { OrbitControls } from "https://esm.sh/three@0.136.0/examples/jsm/control
 import { OBJLoader } from 'https://esm.sh/three@0.136.0/examples/jsm/loaders/OBJLoader';
 import { MeshSurfaceSampler } from 'https://esm.sh/three@0.136.0/examples/jsm/math/MeshSurfaceSampler';
 import * as BufferGeometryUtils from 'https://esm.sh/three@0.136.0/examples/jsm/utils/BufferGeometryUtils';
+
 import { EffectComposer } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/UnrealBloomPass.js';
-const AMBIENT_BG_VOLUME = 0.5; 
+
+// ====== AMBIENT BACKGROUND MUSIC (background.mp3) LOGIC ======
+const AMBIENT_BG_VOLUME = 0.35;
 let ambientBgAudio = document.getElementById("ambientBgAudio");
 if (!ambientBgAudio) {
   ambientBgAudio = new Audio("./background.mp3");
@@ -32,6 +35,7 @@ ambientBgAudio.addEventListener("error", () => {
     }
   }
 });
+
 function startAmbientBgMusic() {
   if (ambientMusicStoppedPermanently || !ambientBgAudio) return;
   ambientBgAudio.muted = false;
@@ -39,6 +43,7 @@ function startAmbientBgMusic() {
     ambientBgAudio.play().catch(() => {});
   }
 }
+
 function stopAmbientBgMusicPermanently() {
   ambientMusicStoppedPermanently = true;
   if (ambientBgAudio) {
@@ -49,11 +54,13 @@ function stopAmbientBgMusicPermanently() {
   }
 }
 
+// ====== REAL-TIME AUDIO ANALYSER FOR BEAT-REACTIVE PARTICLES ======
 let audioCtx = null;
 let bgAnalyser = null;
 let bgDataArray = null;
 let bgAudioSourceConnected = false;
 let smoothedBeat = 0;
+
 function initAmbientAudioAnalyser() {
   if (bgAudioSourceConnected || !ambientBgAudio) return;
   try {
@@ -65,8 +72,7 @@ function initAmbientAudioAnalyser() {
     }
     bgAnalyser = audioCtx.createAnalyser();
     bgAnalyser.fftSize = 128;
-
-    bgAnalyser.smoothingTimeConstant = 0.80;
+    bgAnalyser.smoothingTimeConstant = 0.88;
     const source = audioCtx.createMediaElementSource(ambientBgAudio);
     source.connect(bgAnalyser);
     bgAnalyser.connect(audioCtx.destination);
@@ -76,6 +82,7 @@ function initAmbientAudioAnalyser() {
     console.warn("Web Audio Analyser fallback:", err);
   }
 }
+
 function getAmbientAudioBeat() {
   if (ambientMusicStoppedPermanently || !ambientBgAudio || ambientBgAudio.paused) {
     smoothedBeat *= 0.92;
@@ -100,6 +107,7 @@ function getAmbientAudioBeat() {
   const t = performance.now() * 0.003;
   return (Math.sin(t) * 0.5 + 0.5) * 0.25;
 }
+
 startAmbientBgMusic();
 window.addEventListener("DOMContentLoaded", startAmbientBgMusic);
 window.addEventListener("load", startAmbientBgMusic);
@@ -116,6 +124,8 @@ const unlockAmbientOnFirstInteraction = () => {
 ["click", "touchstart", "pointerdown", "keydown"].forEach(evt => {
   window.addEventListener(evt, unlockAmbientOnFirstInteraction, { passive: true });
 });
+
+// ====== GLSL SHADER CHUNKS FOR CYBER/ETHNO SCENE ======
 let darkenMaterial = `
   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0), globalBloom);
 `;
@@ -284,7 +294,9 @@ window.initCyberEthno = function(prewarmOnly = false) {
   let scene = new THREE.Scene();
   let isPortraitMobile = innerWidth < 768 || innerWidth < innerHeight;
   let baseCyberFov = isPortraitMobile ? 54 : 45;
-  let camera = new THREE.PerspectiveCamera(baseCyberFov, innerWidth / innerHeight, 0.1, 2500);
+  // Prewarm လုပ်ထားချိန်ကတည်းက အဝေး FOV (baseCyberFov + 18) ဖြင့် စတင်ထားရှိသောကြောင့်
+  // Cyber Tree ပေါ်လာသည်နှင့် Zoom-out ခုန်ထွက်ခြင်း လုံးဝမရှိဘဲ အဝေးမှ အနီးသို့ တစ်သမတ်တည်း Zoom-in ဆွဲဝင်လာမည်
+  let camera = new THREE.PerspectiveCamera(baseCyberFov + 18, innerWidth / innerHeight, 0.1, 2500);
   camera.position.set(-1.25, 2, 5).setLength(isPortraitMobile ? 15.5 : 14);
   let renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"});
   cyberRenderer = renderer;
@@ -690,6 +702,8 @@ window.initCyberEthno = function(prewarmOnly = false) {
   let l = new THREE.Line(g, m);
   l.computeLineDistances();
   scene.add(l);
+
+  // <BEETLES>
   let beetlePts = [
     [-1, 1], [0, 0], [1, 1],
     [-0.5, -1], [0, -0.5], [0.5, -1]
@@ -1005,7 +1019,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
             vec3 fillOffset = normalize(treeNor.xyz + aRandom - 0.5) * (sin(aRandom.x * 62.8 + time * 0.8) * 0.42) * fillFactor;
             transformed += newPos * (1.0 + fillFactor * 0.16) + fillOffset;
 
-            // ====== CYBERPUNK TREE GENTLE BEAT-REACTIVE SWAY (FOLIAGE ONLY) ======
             float particleRhythm = sin(aRandom.x * 20.0 + time * 3.8) * 0.5 + 0.5;
             vec3 radialOutDir = normalize(vec3(position.x, 0.25, position.z) + treeNor.xyz * 0.6);
             vec3 treeBeatBounce = radialOutDir * (audioBeat * (0.12 + 0.24 * dist) * (0.4 + 0.6 * particleRhythm));
@@ -1091,7 +1104,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
           `gl_PointSize = size;`,
           `float d = 1. - dist;
             d = pow(d, 2.7);
-
             float beatSizeBoost = 1.0 + audioBeat * (0.28 + 0.18 * sin(aRandom.x * 30.0 + time * 4.5));
             float foliageSize = size * (0.75 + 0.25 * d) * (1.0 + fillFactor * 0.22) * beatSizeBoost;
             float scatterSparkle = 1.0 + vScatterEnvelope * (0.35 * sin(time * 14.0 + aRandom.z * 40.0));
@@ -1224,12 +1236,18 @@ window.initCyberEthno = function(prewarmOnly = false) {
     let currentBeat = getAmbientAudioBeat();
     gu.audioBeat.value = currentBeat;
 
-    if (cyberEntranceActive && entranceProgress < 1.0 && !isSpinningUp) {
-      entranceProgress = Math.min(1.0, t / 2.4);
-      let easeOutCubic = 1.0 - Math.pow(1.0 - entranceProgress, 3.0);
-      camera.fov = (baseCyberFov + 22) - 22 * easeOutCubic;
+    if (!cyberEntranceActive) {
+      // Prewarm အချိန်ကတည်းက အဝေး FOV ဖြင့် အသင့်ပြင်ထားခြင်း (Zoom-out ခုန်ထွက်ခြင်း လုံးဝမဖြစ်စေရန်)
+      camera.fov = baseCyberFov + 18;
       camera.updateProjectionMatrix();
-      scene.rotation.y = (1.0 - easeOutCubic) * -0.45;
+      scene.rotation.y = -0.35;
+    } else if (entranceProgress < 1.0 && !isSpinningUp) {
+      // အဝေးမှ အနီးသို့ တစ်သမတ်တည်း တိုက်ရိုက် Zoom-in ဆွဲဝင်လာစေခြင်း
+      entranceProgress = Math.min(1.0, t / 2.2);
+      let easeOutCubic = 1.0 - Math.pow(1.0 - entranceProgress, 3.0);
+      camera.fov = (baseCyberFov + 18) - 18 * easeOutCubic;
+      camera.updateProjectionMatrix();
+      scene.rotation.y = (1.0 - easeOutCubic) * -0.35;
     }
 
     if (cyberEntranceActive && t > treeMorphDelay) {
@@ -1587,7 +1605,6 @@ engageBtn.addEventListener("click", () => {
     setTimeout(() => {
       birthdayReveal.classList.add("visible");
 
-
       if (ambientBgAudio && !ambientMusicStoppedPermanently) {
         ambientBgAudio.volume = 0.06;
       }
@@ -1611,11 +1628,9 @@ engageBtn.addEventListener("click", () => {
 
           if (temporalPortalOverlay) temporalPortalOverlay.classList.add("active");
 
+          // Time Machine နှင့် Cyber Tree နှစ်ခုလုံး တစ်ပြိုင်နက်တည်း တစ်သမတ်တည်း Zoom-in ဆွဲဝင်ကူးပြောင်းစေခြင်း
           timeMachine.classList.add("zoom-out");
-
-          setTimeout(() => {
-            cyberEthnoContainer.classList.add("visible");
-          }, 320);
+          cyberEthnoContainer.classList.add("visible");
 
           setTimeout(() => {
             if (forYouVideoEl) {
@@ -1625,7 +1640,6 @@ engageBtn.addEventListener("click", () => {
               forYouVideoEl.muted = true;
               forYouVideoEl.volume = 0;
             }
-
             if (ambientBgAudio && !ambientMusicStoppedPermanently) {
               ambientBgAudio.volume = AMBIENT_BG_VOLUME;
             }
@@ -1782,7 +1796,7 @@ function initGalaxy() {
     const galaxy = new THREE.Group();
     scene.add(galaxy);
 
-    const phrases = ["✨ချစ်စရာ ကောင်မလေး","အလှဆုံးလေး 💛","Mi BeBe","ကိုယ့်ရဲ့ကောင်းကင်လေး 🌌", "Hermosota✨","Mi Todo","Perla 💫","Mi Canción Favorita 🎶", "ကိုယ့်ရဲ့ကမ္ဘာလေး","ကိုယ့်ရဲ့အလင်းရောင်လေး 🌠","Mi Eterna","ကိုယ်အမြဲတမ်း တွေးနေရတဲ့အရာလေး","Mi Bombom", "ချီးထုတ်လေ"," Happy Birthday"];
+    const phrases = ["Pinchecha ✨", " Hermosa 💛", "Mi Bebe", "Mi Cielito 🌌", "Hermosota ✨", "Mi Infinita ♾️", "Mi Todo", "Me Encantas 🥰", " Perla 💫", "Te Amo💛", "Mi Canción Favorita 🎶", "Unica 😊", "Mi Reina 👑", "Mi Amor", "Mi Mundo", "Mi Luz 🌠", "Mi Niña", "Mi Tesoro💛", "Mi Paz", "Mi Eterna", "Mi Sueño", "Mi Pensamiento Favorito", "Mi Bombom", "Mi Diosa", "Te Amo Infinitamente ♾️"];
     const phraseCount = Math.max(phrases.length * 6, 180);
     const arms = 5, radius = 82, maxH = 22;
 
@@ -2016,6 +2030,7 @@ function initGalaxy() {
       bgPhotoRings.push(ringGroup);
     });
 
+    // ====== GLSL SHADER: PARTIAL GALAXY TO "Happy Birthday Bae Bae" TEXT & FIREWORKS ======
     const particleCount = 70000;
     const textPoints = generateTextPoints();
     const numTextPoints = textPoints.length / 3;
@@ -2109,7 +2124,6 @@ function initGalaxy() {
 
             float radialDrift = sin(id * 317.13) * 0.045 * fillProgress;
             float normDist = clamp(pow(rnd.x, 0.76) + radialDrift, 0.0, 1.0);
-            // ဂလက်ဆီအမှုန်များ သီချင်းစည်းချက်အတိုင်း ညင်သာချောမွေ့စွာသာ လှိုင်းထစေခြင်း
             float beatRadialPulse = 1.0 + uAudioBeat * (0.04 + 0.05 * sin(normDist * 10.0 - uTime * 3.2));
             float dist = mix(minR, maxR, normDist) * beatRadialPulse;
 
@@ -2127,7 +2141,6 @@ function initGalaxy() {
             float thickness = pow(1.0 - normDist, 1.75);
             float baseH = (fract(id * 419.73) - 0.5) * 24.0 * thickness;
             float spiralWaveY = sin(dist * 0.22 - uTime * 2.0 + armIndex) * 1.8 * thickness;
-            // အမှုန်များ အရမ်းမြန်မြန် မခုန်စေဘဲ ညင်သာသော လှိုင်းကဲ့သို့သာ အပေါ်အောက် လိုက်လှုပ်ရှားစေခြင်း
             float beatBounceY = sin(id * 120.0 + uTime * 3.8) * uAudioBeat * (1.2 + 2.2 * (1.0 - normDist));
 
             return vec3(cos(angle) * dist, baseH + spiralWaveY + beatBounceY, sin(angle) * dist);
@@ -2464,7 +2477,6 @@ function initGalaxy() {
 
       core.rotation.y = elapsedTime * 0.12;
       photonRing.rotation.z = elapsedTime * 0.18;
-      // Black hole ဘေးက အလင်းကွင်းလည်း သီချင်းစည်းချက်အတိုင်း လိုက်ခုန်နေစေခြင်း
       photonRing.scale.setScalar(1.0 + currentBeat * 0.18);
       renderer.render(scene, camera);
     }
@@ -2516,7 +2528,7 @@ function initGalaxy() {
   } catch(e) { showError('Error cargando la galaxia: '+e.message); console.error(e); }
 }
 
-// ====== 3D MUSIC PLAYER LOGIC (FIXED EMPTY SRC BUG) ======
+// ====== 3D MUSIC PLAYER LOGIC ======
 const songs = [
   {
     name: "Happy Birthday Bae Bae",
@@ -2692,7 +2704,6 @@ songEl.addEventListener("ended", () => {
 
 const playSong = () => {
   if (!songEl) return;
-  // song.mp3 စဖွင့်သည်နှင့် background.mp3 ကို သေချာပေါက် ပိတ်သိမ်းထားမည်
   stopAmbientBgMusicPermanently();
 
   updateSongInfo();
@@ -2788,7 +2799,7 @@ window.triggerGiftFinaleSequence = function() {
       giftBox.classList.add('appear', 'shaking');
     }
     if (captionText) {
-      captionText.textContent = "🎁✨";
+      captionText.textContent = "သင့်အတွက် အထူးမွေးနေ့လက်ဆောင်ထုပ်လေး ပွင့်တော့မယ်နော်... 🎁✨";
     }
   }, 300);
 
@@ -2812,7 +2823,7 @@ function openGiftBoxAndRevealAll() {
   }
 
   if (captionText) {
-    captionText.textContent = "🧸🐰🐱";
+    captionText.textContent = "ချစ်စရာ အရုပ်ကလေးတွေ ထွက်လာပါပြီ... 🧸🐰🐱";
   }
   dolls.forEach((doll, idx) => {
     setTimeout(() => {
