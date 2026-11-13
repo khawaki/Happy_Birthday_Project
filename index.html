@@ -14,12 +14,12 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <!-- External CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=5">
   </head>
 
   <body>
     <div class="time-machine" aria-label="Time travel from 14, 2004 to 14, 2026">
-      <div class="time-machine__label">EINSTEIN'S TEMPORAL LABORATORY</div>
+      <div class="time-machine__label">Birthday Wish Laboratory</div>
 
       <!-- ပထမဆုံးနေရာရှိ 3x3 ဓာတ်ပုံဇယားကွက် (ဘောင်ပါ Fade Out ဖြစ်မည်) နှင့် သူမ၏ ၁၁ စက္ကန့်စာ Video Clip (id="foryou") -->
       <div class="photo-stage">
@@ -30,14 +30,14 @@
           <video
             id="foryou"
             class="foryou-full-video"
-            src="./foryou.mp4"
+            src="foryou.mp4"
             autoplay
             loop
             playsinline
             webkit-playsinline
             preload="auto"
           >
-            <source src="./foryou.mp4" type="video/mp4">
+            <source src="foryou.mp4" type="video/mp4">
           </video>
         </div>
       </div>
@@ -214,9 +214,9 @@
         </div>
       </div>
 
-      <!-- Music Player Controls (Connected to Open Wishes) -->
+      <!-- Music Player Controls (Connected directly to ./song.mp3) -->
       <div id="music-player-controls">
-        <audio class="song" id="bgAudioEl" src="" preload="auto"></audio>
+        <audio class="song" id="bgAudioEl" src="./song.mp3" preload="auto"></audio>
         <input type="range" value="0" class="music-progress-bar progress" id="musicProgress">
         <div class="music-info-row">
           <div class="music-track-info">
@@ -234,7 +234,6 @@
       <!-- သီချင်းပြီးဆုံးသည်နှင့် ပေါ်လာမည့် လက်ဆောင်ထုပ်၊ အရုပ်ကလေးများနှင့် ဓာတ်ပုံပန်းစည်း Stage -->
       <div id="gift-finale-stage" aria-live="polite">
         <div class="finale-scene-wrapper">
-          <!-- 3. လက်ဆောင်ထုပ်ထဲမှ နောက်ဆုံးပေါ်ထွက်လာမည့် ဓာတ်ပုံပန်းစည်း (Photo Bouquet) -->
           <div class="photo-bouquet" id="photoBouquet">
             <div class="bouquet-back-wrap"></div>
             <div class="bouquet-inner-tissue"></div>
@@ -253,9 +252,7 @@
             <div class="bouquet-banner-tag">Happy 22nd Birthday Bae Bae 💐</div>
           </div>
 
-          <!-- 2. လက်ဆောင်ထုပ်ထဲမှ အရင်ထွက်လာမည့် ချစ်စရာ အရုပ်ကလေးများ (4 Cute Plushie Dolls) -->
           <div class="plushie-dolls-layer" id="plushieDollsLayer">
-            <!-- Doll 1: Cute Teddy Bear (Left Outer) -->
             <div class="plushie-doll" style="--dx: -124px; --dy: -18px; --drot: -15deg; --ddelay: 0.05s;">
               <svg viewBox="0 0 100 120">
                 <circle cx="24" cy="24" r="14" fill="#c68b59" stroke="#5c3a21" stroke-width="3"/>
@@ -276,7 +273,6 @@
               </svg>
             </div>
 
-            <!-- Doll 2: Cute Pink Bunny (Left Inner) -->
             <div class="plushie-doll" style="--dx: -68px; --dy: 16px; --drot: -8deg; --ddelay: 0.22s;">
               <svg viewBox="0 0 100 120">
                 <ellipse cx="36" cy="20" rx="8" ry="20" transform="rotate(-10 36 20)" fill="#ffc2d1" stroke="#b55d75" stroke-width="3"/>
@@ -295,7 +291,6 @@
               </svg>
             </div>
 
-            <!-- Doll 3: Cute White Kitty (Right Inner) -->
             <div class="plushie-doll" style="--dx: 68px; --dy: 16px; --drot: 8deg; --ddelay: 0.38s;">
               <svg viewBox="0 0 100 120">
                 <polygon points="24,42 28,16 46,32" fill="#fff8f0" stroke="#8c6d62" stroke-width="3" stroke-linejoin="round"/>
@@ -317,7 +312,6 @@
               </svg>
             </div>
 
-            <!-- Doll 4: Cute Golden Bear with Crown (Right Outer) -->
             <div class="plushie-doll" style="--dx: 124px; --dy: -18px; --drot: 15deg; --ddelay: 0.52s;">
               <svg viewBox="0 0 100 120">
                 <circle cx="25" cy="28" r="13" fill="#f4a261" stroke="#8d4925" stroke-width="3"/>
@@ -336,7 +330,6 @@
             </div>
           </div>
 
-          <!-- 1. လက်ဆောင်ထုပ် (Surprise Gift Box) -->
           <div class="gift-box-assembly" id="surpriseGiftBox" onclick="manualOpenGiftBox()" title="Tap to open gift">
             <div class="gift-inner-glow"></div>
             <div class="gift-box-lid">
@@ -351,7 +344,7 @@
     </div>
 
     <!-- External JS Module -->
-    <script type="module" src="javascript.js"></script>
+    <script type="module" src="javascript.js?v=5"></script>
   </body>
 
 </html>
