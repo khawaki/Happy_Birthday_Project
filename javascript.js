@@ -74,7 +74,8 @@ function initAmbientAudioAnalyser() {
     }
     bgAnalyser = audioCtx.createAnalyser();
     bgAnalyser.fftSize = 128;
-    bgAnalyser.smoothingTimeConstant = 0.78;
+    // အမှုန်များ အရမ်းမြန်မြန် မခုန်စေရန် Smoothing ကို 0.88 သို့ မြှင့်တင်ထားသည်
+    bgAnalyser.smoothingTimeConstant = 0.88;
     const source = audioCtx.createMediaElementSource(ambientBgAudio);
     source.connect(bgAnalyser);
     bgAnalyser.connect(audioCtx.destination);
@@ -85,10 +86,10 @@ function initAmbientAudioAnalyser() {
   }
 }
 
-// Frame တိုင်းတွင် background.mp3 ၏ Bass နှင့် Treble စည်းချက်ကို 0.0 မှ 1.0 အတွင်း တွက်ချက်ပေးမည့် Function
+// Frame တိုင်းတွင် background.mp3 ၏ Bass စည်းချက်ကို ညင်သာချောမွေ့စွာ (0.0 မှ 0.55 အတွင်း) တွက်ချက်ပေးမည့် Function
 function getAmbientAudioBeat() {
   if (ambientMusicStoppedPermanently || !ambientBgAudio || ambientBgAudio.paused) {
-    smoothedBeat *= 0.9;
+    smoothedBeat *= 0.92;
     return smoothedBeat;
   }
   if (bgAnalyser && bgDataArray) {
@@ -96,27 +97,21 @@ function getAmbientAudioBeat() {
       audioCtx.resume().catch(() => {});
     }
     bgAnalyser.getByteFrequencyData(bgDataArray);
-    // Bass & Low-Mid Frequencies (Index 0 to 12) နှင့် Peak Bass တို့ကို ရောစပ်၍ စည်းချက် (Beat Punch) ပိုမိုသိသာစေမည်
     let bassSum = 0;
-    let peakBass = 0;
-    const bassBins = 12;
+    const bassBins = 10;
     for (let i = 0; i < bassBins; i++) {
-      const val = bgDataArray[i];
-      bassSum += val;
-      if (val > peakBass) peakBass = val;
+      bassSum += bgDataArray[i];
     }
     const avgBass = bassSum / (bassBins * 255);
-    const normPeak = peakBass / 255;
-    const combined = avgBass * 0.55 + normPeak * 0.45;
-    // စည်းချက်ကျသည့်အချိန်တွင် ချက်ချင်း ဆောင့်တက် (Fast Attack) ပြီး ပြန်ကျချိန် ညင်သာစေမည်
-    const boostedBeat = Math.min(1.35, Math.pow(combined * 1.55, 1.5));
-    const lerpSpeed = boostedBeat > smoothedBeat ? 0.52 : 0.22;
-    smoothedBeat += (boostedBeat - smoothedBeat) * lerpSpeed;
+    // အရမ်းကြမ်းတမ်းစွာ မခုန်စေဘဲ သီချင်းသံအတိုင်း ညင်သာစွာ စီးမျောခုန်ပေါက်စေရန် ကန့်သတ်ထားသည်
+    const gentleTarget = Math.min(0.55, Math.pow(avgBass, 1.35) * 0.75);
+    const lerpSpeed = gentleTarget > smoothedBeat ? 0.14 : 0.08;
+    smoothedBeat += (gentleTarget - smoothedBeat) * lerpSpeed;
     return smoothedBeat;
   }
-  // Fallback rhythmic pulse
-  const t = performance.now() * 0.008;
-  return Math.pow(Math.sin(t) * 0.5 + 0.5, 2.0) * 0.65;
+  // Fallback gentle rhythmic pulse
+  const t = performance.now() * 0.003;
+  return (Math.sin(t) * 0.5 + 0.5) * 0.25;
 }
 
 // Website ပွင့်လာသည်နှင့် Auto-play စတင်ကြိုးစားမည်။
@@ -664,7 +659,7 @@ window.initCyberEthno = function(prewarmOnly = false) {
         `#include <begin_vertex>`,
         `#include <begin_vertex>
           vLineDistance = lineDistance;
-          transformed.y *= instPos.w * (1.0 + audioBeat * 0.35);
+          transformed.y *= instPos.w * (1.0 + audioBeat * 0.14);
           
           float t = time * 0.1;
           vec3 wind = vec3(1, 0, 1);
@@ -676,7 +671,7 @@ window.initCyberEthno = function(prewarmOnly = false) {
           n = n * 0.5 + 0.5;
           vNoise = n;
           transformed.y *= 0.5 + (1. - n) * 0.5;
-          transformed += wind * vec3(0.5, 1, 0.25) * vec3(n, 1, n2) * pow(position.y, 2.7) * (1.0 + audioBeat * 0.6);
+          transformed += wind * vec3(0.5, 1, 0.25) * vec3(n, 1, n2) * pow(position.y, 2.7) * (1.0 + audioBeat * 0.22);
           transformed += instPos.xyz;
         `
       );
@@ -756,11 +751,11 @@ window.initCyberEthno = function(prewarmOnly = false) {
           vec3 iPos = instPos;
           iPos.x = -7. + mod(instPos.x - (-7.) + time * 0.75, 14.);
           iPos.y += sin(iPos.x + instPhase * 7.) * (0.5 * instPhase + 0.5);
-          // ပိုးစုန်းကြူးအမှုန်လေးများလည်း သီချင်း Beat အတိုင်း ခုန်ပေါက်နေစေခြင်း
-          iPos.y += sin(time * 14.0 + instPhase * 25.0) * audioBeat * 0.45;
+          // ပိုးစုန်းကြူးအမှုန်လေးများ သီချင်း Beat အတိုင်း ညင်သာစွာ လိုက်လှုပ်ရှားစေခြင်း
+          iPos.y += sin(time * 4.0 + instPhase * 12.0) * audioBeat * 0.18;
           iPos.z += sin(iPos.x * 0.5) * (instPhase - 0.5) * 2.;
           
-          vec3 sclPos = position * (1. - instPhase * 0.5) * (1.0 + audioBeat * 0.45);
+          vec3 sclPos = position * (1. - instPhase * 0.5) * (1.0 + audioBeat * 0.18);
           float t = (mod(time, 20.) + instPhase + sclPos.x * 0.1) * PI2 * 5. * (1. + instPhase * 0.5);
           float tVal = sin(t) * 0.5 + 0.5;
           float angle = (-PI / 6.) + (PI * 2. / 3.) * tVal;
@@ -1031,13 +1026,12 @@ window.initCyberEthno = function(prewarmOnly = false) {
             vec3 fillOffset = normalize(treeNor.xyz + aRandom - 0.5) * (sin(aRandom.x * 62.8 + time * 0.8) * 0.42) * fillFactor;
             transformed += newPos * (1.0 + fillFactor * 0.16) + fillOffset;
 
-            // ====== CYBERPUNK TREE BEAT-REACTIVE BOUNCE & RADIAL PULSE ======
-            // သီချင်းသံ (audioBeat) အတိုင်း သစ်ပင်အမှုန်များ အပေါ်အောက်နှင့် ဘေးပတ်လည်သို့ စည်းချက်ကျကျ သိသာစွာ လိုက်ခုန်နေစေခြင်း
-            float particleRhythm = sin(aRandom.x * 45.0 + time * 14.0) * 0.5 + 0.5;
+            // ====== CYBERPUNK TREE GENTLE BEAT-REACTIVE SWAY (FOLIAGE ONLY) ======
+            // သစ်ပင်နားရှိ အရွက်အမှုန်များသာ သီချင်းစည်းချက်အတိုင်း ညင်သာစွာ လိုက်ခုန်ပြီး စာသားအမှုန်များ လုံးဝမခုန်စေရန်
+            float particleRhythm = sin(aRandom.x * 20.0 + time * 3.8) * 0.5 + 0.5;
             vec3 radialOutDir = normalize(vec3(position.x, 0.25, position.z) + treeNor.xyz * 0.6);
-            vec3 treeBeatBounce = radialOutDir * (audioBeat * (0.45 + 0.95 * dist) * (0.5 + 0.85 * particleRhythm));
-            // အပေါ်အောက် ဒေါင်လိုက် စည်းချက်ခုန်မှု (Vertical Beat Hop)
-            treeBeatBounce.y += audioBeat * (0.38 + 0.72 * sin(time * 16.0 + aRandom.y * 30.0 + position.x * 1.5)) * (0.4 + 0.6 * dist);
+            vec3 treeBeatBounce = radialOutDir * (audioBeat * (0.12 + 0.24 * dist) * (0.4 + 0.6 * particleRhythm));
+            treeBeatBounce.y += audioBeat * (0.1 + 0.18 * sin(time * 4.2 + aRandom.y * 15.0)) * dist;
             transformed += treeBeatBounce * isFoliage;
             
             distRatio = dist;
@@ -1078,15 +1072,13 @@ window.initCyberEthno = function(prewarmOnly = false) {
             float microX = sin(time * (2.2 + aRandom.x * 2.0) + aRandom.y * 6.28) * 0.008;
             float microY = cos(time * (2.0 + aRandom.y * 2.0) + aRandom.z * 6.28) * 0.008;
             float waveY = sin(time * 1.6 + activeTarget.x * 1.1) * 0.022;
-            // သစ်ပင်မှ ထွက်လာသော စာသားအမှုန်များလည်း သီချင်း Beat အတိုင်း မြူးကြွစွာ လိုက်ခုန်စေခြင်း
-            float textBeatHop = audioBeat * (0.14 + 0.22 * sin(activeTarget.x * 3.2 + time * 15.0 + aRandom.y * 6.28));
-            float textBeatJitterX = audioBeat * 0.06 * cos(time * 18.0 + aRandom.z * 25.0);
 
-            vec3 localOffset = (activeTarget + fluffyDispersion) * textScale * (1.0 + audioBeat * 0.09);
+            // စာသားအမှုန်များကို သီချင်း Beat ကြောင့် လုံးဝမခုန်စေဘဲ ကြည်လင်ပြတ်သားစွာ ဖတ်ရှုနိုင်အောင် မူလအတိုင်း တည်ငြိမ်စွာ ထားရှိခြင်း
+            vec3 localOffset = (activeTarget + fluffyDispersion) * textScale;
 
             vec3 textWorldPos = textCenter
-              + camRight * (localOffset.x + microX + textBeatJitterX)
-              + camUp * (localOffset.y + microY + waveY + textBeatHop)
+              + camRight * (localOffset.x + microX)
+              + camUp * (localOffset.y + microY + waveY)
               + camForward * localOffset.z;
 
             float textMorphAmt = easedMorph * isTextPart;
@@ -1122,11 +1114,11 @@ window.initCyberEthno = function(prewarmOnly = false) {
           `gl_PointSize = size;`,
           `float d = 1. - dist;
             d = pow(d, 2.7);
-            // Beat ရိုက်ချက်တိုင်းတွင် သစ်ပင်အမှုန်များ အရွယ်အစား ပိုမိုကြီးထွားတောက်ပလာစေခြင်း
-            float beatSizeBoost = 1.0 + audioBeat * (0.75 + 0.55 * sin(aRandom.x * 60.0 + time * 16.0));
+            // သစ်ပင်အရွက်အမှုန်များသာ သီချင်း Beat အတိုင်း အရွယ်အစား ညင်သာစွာ လင်းလက်ပြီး စာသားအမှုန်အရွယ်အစားကို တည်ငြိမ်စွာ ထားရှိခြင်း
+            float beatSizeBoost = 1.0 + audioBeat * (0.28 + 0.18 * sin(aRandom.x * 30.0 + time * 4.5));
             float foliageSize = size * (0.75 + 0.25 * d) * (1.0 + fillFactor * 0.22) * beatSizeBoost;
             float scatterSparkle = 1.0 + vScatterEnvelope * (0.35 * sin(time * 14.0 + aRandom.z * 40.0));
-            float textPtSize = size * (0.58 + 0.08 * sin(time * 3.5 + aRandom.x * 20.0)) * scatterSparkle * (1.0 + audioBeat * 0.55);
+            float textPtSize = size * (0.58 + 0.08 * sin(time * 3.5 + aRandom.x * 20.0)) * scatterSparkle;
             float basePtSize = mix(foliageSize, textPtSize, vIsTextMorph);
             float starSize = size * (0.55 + 0.45 * sin(time * 5.0 + vRndX * 40.0)) * beatSizeBoost;
             gl_PointSize = mix(basePtSize, starSize, vGalaxyWarp);`
@@ -1164,11 +1156,10 @@ window.initCyberEthno = function(prewarmOnly = false) {
           float d = pow(ss(0., 1., dist), 2.7);
           vec3 col = mix(1. - diffuse * 0.5, diffuse, ss(-fsUv, fsUv, sUv.x));
           col = col * (0.75 + 0.25 * pow(distRatio, 2.7));
-          // သီချင်း Beat ကျချိန်တွင် သစ်ပင်အမှုန်များ Neon Cyan/Gold အလင်းရောင် ပိုမိုတောက်ပလာစေခြင်း
-          col += vec3(0.15, 0.45, 0.35) * audioBeat * 0.85;
+          col += vec3(0.1, 0.3, 0.22) * audioBeat * 0.45;
 
           vec3 galaxySwarmCol = palette(vRndX * 0.8 + time * 0.04, vec3(0.75, 0.55, 0.85), vec3(0.35, 0.3, 0.45), vec3(1.0, 1.0, 1.0), vec3(0.15, 0.35, 0.68));
-          vec3 crispTextCol = mix(galaxySwarmCol * 1.15, vec3(1.0, 0.96, 1.0), ss(0.55, 0.0, dist) * 0.4 + vScatterEnvelope * 0.28) * (1.0 + audioBeat * 0.35);
+          vec3 crispTextCol = mix(galaxySwarmCol * 1.15, vec3(1.0, 0.96, 1.0), ss(0.55, 0.0, dist) * 0.4 + vScatterEnvelope * 0.28);
           col = mix(col, crispTextCol, vIsTextMorph);
 
           vec3 cosmicGalaxyCol = palette(vRndX * 0.8 + time * 0.06, vec3(0.75, 0.55, 0.85), vec3(0.35, 0.3, 0.45), vec3(1.0, 1.0, 1.0), vec3(0.15, 0.35, 0.68));
@@ -1309,8 +1300,8 @@ window.initCyberEthno = function(prewarmOnly = false) {
       bloomPass.strength = 5.0 - smoothWarp * 1.6;
     } else {
       gu.time.value = t;
-      // Cyberpunk သစ်ပင်တစ်ခုလုံး၏ Neon Bloom အလင်းရောင်လည်း သီချင်း Beat အတိုင်း လိုက်ခုန်နေစေခြင်း
-      bloomPass.strength = 4.8 + currentBeat * 1.6;
+      // Cyberpunk သစ်ပင်၏ Neon Bloom အလင်းရောင်ကိုလည်း မျက်စိမကျိန်းစေဘဲ ညင်သာစွာသာ လင်းလက်စေခြင်း
+      bloomPass.strength = 4.9 + currentBeat * 0.65;
     }
 
     gu.split.value.y = 0.5 + Math.sin(t) * 0.1;
@@ -2144,8 +2135,8 @@ function initGalaxy() {
 
             float radialDrift = sin(id * 317.13) * 0.045 * fillProgress;
             float normDist = clamp(pow(rnd.x, 0.76) + radialDrift, 0.0, 1.0);
-            // သီချင်း Bass စည်းချက်အတိုင်း ဂလက်ဆီအမှုန်များ အပြင်သို့ စည်းချက်ကျကျ ခုန်ထွက်/ကျယ်ပြန့်စေခြင်း
-            float beatRadialPulse = 1.0 + uAudioBeat * (0.12 + 0.14 * sin(normDist * 18.0 - uTime * 8.0));
+            // ဂလက်ဆီအမှုန်များ သီချင်းစည်းချက်အတိုင်း ညင်သာချောမွေ့စွာသာ လှိုင်းထစေခြင်း
+            float beatRadialPulse = 1.0 + uAudioBeat * (0.04 + 0.05 * sin(normDist * 10.0 - uTime * 3.2));
             float dist = mix(minR, maxR, normDist) * beatRadialPulse;
 
             float armIndex = floor(rnd.y * arms);
@@ -2162,8 +2153,8 @@ function initGalaxy() {
             float thickness = pow(1.0 - normDist, 1.75);
             float baseH = (fract(id * 419.73) - 0.5) * 24.0 * thickness;
             float spiralWaveY = sin(dist * 0.22 - uTime * 2.0 + armIndex) * 1.8 * thickness;
-            // သီချင်းသံအတိုင်း အမှုန်တစ်ခုချင်းစီ အပေါ်အောက် မြူးကြွစွာ လိုက်ခုန်နေမည့် Beat Bounce
-            float beatBounceY = sin(id * 850.0 + uTime * 14.0) * uAudioBeat * (4.5 + 8.5 * (1.0 - normDist));
+            // အမှုန်များ အရမ်းမြန်မြန် မခုန်စေဘဲ ညင်သာသော လှိုင်းကဲ့သို့သာ အပေါ်အောက် လိုက်လှုပ်ရှားစေခြင်း
+            float beatBounceY = sin(id * 120.0 + uTime * 3.8) * uAudioBeat * (1.2 + 2.2 * (1.0 - normDist));
 
             return vec3(cos(angle) * dist, baseH + spiralWaveY + beatBounceY, sin(angle) * dist);
         }
@@ -2181,13 +2172,10 @@ function initGalaxy() {
             float jitterY = cos(uTime * (speed * 1.15) + phaseY) * (0.18 + rnd.z * 0.25);
             float jitterZ = sin(uTime * (speed * 0.85) + phaseZ) * (0.4 + rnd.x * 0.6);
 
-            // "Happy Birthday Bae Bae" စာသားအမှုန်များလည်း သီချင်းသံအတိုင်း လှိုင်းထ၍ လိုက်ခုန်နေစေခြင်း
-            float textBeatBounce = uAudioBeat * (1.2 + 1.8 * sin(target.x * 0.25 + uTime * 12.0 + rnd.x * 6.28));
-            float textBeatScale = 1.0 + uAudioBeat * 0.065;
-
+            // "Happy Birthday Bae Bae" စာသားပေါ်ရှိ အမှုန်များကို သီချင်း Beat ကြောင့် လုံးဝမခုန်စေဘဲ ရှင်းလင်းပြတ်သားစွာ မြင်ရစေရန် တည်ငြိမ်စွာ ထားရှိခြင်း
             vec3 center = vec3(0.0, 25.5, 0.0);
-            float localX = (target.x * uTextScale * textBeatScale) + jitterX * uTextScale;
-            float localY = ((target.y - 27.0) * uTextScale * textBeatScale) + (waveY + jitterY + textBeatBounce) * uTextScale;
+            float localX = (target.x * uTextScale) + jitterX * uTextScale;
+            float localY = ((target.y - 27.0) * uTextScale) + (waveY + jitterY) * uTextScale;
             float localZ = target.z + waveZ + jitterZ;
 
             vec3 worldPos = center + uCamRight * localX + uCamUp * localY + uCamForward * localZ;
@@ -2239,16 +2227,16 @@ function initGalaxy() {
 
             vec3 colGalaxy = palette(aRandom.x * 0.8 + uTime * 0.04, vec3(0.75, 0.55, 0.85), vec3(0.35, 0.3, 0.45), vec3(1.0, 1.0, 1.0), vec3(0.15, 0.35, 0.68));
             vec3 colText = colGalaxy;
-            vColor = mix(colGalaxy, colText, effectiveMorph) * (1.0 + uAudioBeat * 0.35);
+            vColor = mix(colGalaxy, colText, effectiveMorph) * (1.0 + uAudioBeat * 0.15 * isBgGalaxy);
 
             float baseAlpha = (0.35 + 0.65 * sin(uTime * 5.0 + aId * PI * 20.0)) * (1.0 + fillFactor * 0.25);
             float textTwinkle = 0.65 + 0.35 * sin(uTime * (3.5 + aRandom.y * 4.0) + aId * 500.0);
             vAlpha = mix(clamp(baseAlpha, 0.0, 1.0), textTwinkle, effectiveMorph);
 
-            float beatSizePulse = 1.0 + uAudioBeat * (0.55 + 0.35 * sin(aId * 400.0 + uTime * 15.0));
+            float beatSizePulse = 1.0 + uAudioBeat * (0.22 + 0.12 * sin(aId * 180.0 + uTime * 4.0));
             float baseSize = (2.2 + aRandom.x * 2.8) * (1.0 + fillFactor * 0.18) * beatSizePulse;
             float textPulse = 1.0 + 0.28 * cos(uTime * (3.0 + aRandom.z * 3.5) + aId * 300.0);
-            float textSize = (3.0 + aRandom.x * 2.0) * textPulse * (1.0 + uAudioBeat * 0.4);
+            float textSize = (3.0 + aRandom.x * 2.0) * textPulse;
             float finalPointSize = mix(baseSize, textSize, effectiveMorph);
 
             if (isFirework > 0.5 && uMorphProgress > 0.01) {
