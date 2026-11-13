@@ -18,13 +18,11 @@
   </head>
 
   <body>
-    <!-- Website စပွင့်လာသည်နှင့် Galaxy အထိ နောက်ခံဖွင့်ပေးမည့် background.mp3 -->
     <audio id="ambientBgAudio" src="./background.mp3" autoplay loop preload="auto"></audio>
 
     <div class="time-machine" aria-label="Time travel from 14, 2004 to 14, 2026">
       <div class="time-machine__label">Birthday Wish Laboratory</div>
 
-      <!-- ပထမဆုံးနေရာရှိ 3x3 ဓာတ်ပုံဇယားကွက် (ဘောင်ပါ Fade Out ဖြစ်မည်) နှင့် သူမ၏ ၁၁ စက္ကန့်စာ Video Clip (id="foryou") -->
       <div class="photo-stage">
         <div class="photo-matrix-wrapper" id="photoMatrixWrapper">
           <div class="photo-matrix" id="photoMatrix" aria-label="Memory Photo Matrix"></div>
@@ -164,7 +162,7 @@
             <span class="emoji">🎂</span>
             <h1 class="neon-text">Happy 22nd Birthday</h1>
             <p class="subtitle">“To My Dearest Aye Myat Mon (Bae Bae)”</p>
-            <div class="footer-line">14 · 2004 — 14 · 2026 ✨</div>
+            <div class="footer-line">14 · 2026 ✨</div>
             <button onclick="openFirstWishAndPlayMusic()">Open Wishes 🎁</button>
           </div>
         </div>
@@ -208,10 +206,6 @@
             <p>“ကျန်းမာပျော်ရွှင်ပြီး အနာဂတ်ခရီးလမ်းတစ်လျှောက်လုံး ကိုယ်နဲ့အတူ အမှတ်တရကောင်းတွေ အများကြီး ဖန်တီးသွားကြမယ်နော်။”</p>
             <div class="song-status-pill" id="songStatusPill">
               <span class="song-wave-dot"></span>
-              <span id="songStatusText">သီချင်းဆုံးသွားတာနဲ့ လက်ဆောင်ထုပ်လေး ပေါ်လာပါမယ် 🎵🎁</span>
-            </div>
-            <div>
-              <button class="skip-to-gift-btn" onclick="triggerGiftFinaleSequence()">လက်ဆောင်ထုပ် အခုဖွင့်မယ် 🎁</button>
             </div>
           </div>
         </div>
@@ -234,7 +228,7 @@
         </div>
       </div>
 
-      <!-- သီချင်းပြီးဆုံးသည်နှင့် ပေါ်လာမည့် လက်ဆောင်ထုပ်၊ အရုပ်ကလေးများနှင့် ဓာတ်ပုံပန်းစည်း Stage -->
+
       <div id="gift-finale-stage" aria-live="polite">
         <div class="finale-scene-wrapper">
           <div class="photo-bouquet" id="photoBouquet">
@@ -341,7 +335,7 @@
             <div class="gift-box-body"></div>
           </div>
 
-          <div class="finale-caption-text" id="finaleCaptionText">သင့်အတွက် အထူးမွေးနေ့လက်ဆောင်ထုပ်လေး ရောက်ရှိလာပါပြီ 🎁✨</div>
+          <div class="finale-caption-text" id="finaleCaptionText">🎁✨</div>
         </div>
       </div>
     </div>
