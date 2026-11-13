@@ -2408,7 +2408,7 @@ const songs = [
     name: "Happy Birthday Bae Bae",
     artist: "Special Wish",
     // သင့်စိတ်ကြိုက် သီချင်း MP3 Link ကို အောက်ပါနေရာတွင် အစားထိုးထည့်သွင်းပါ
-    source: "https://github.com/khawaki/music_player/releases/download/music/happy-birthday-zenith.mp3", 
+    source: "./happy-birthday-zenith.mp3", 
     cover: "photo1.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
   }
 ];
