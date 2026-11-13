@@ -255,23 +255,20 @@ box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 background: #0e0a07;
 }
 
-/* ====== ULTRA-SMOOTH GPU PORTAL TRANSITION (TIME MACHINE -> CYBER TREE) ====== */
+/* ====== ULTRA-SMOOTH GPU PORTAL TRANSITION (TIME MACHINE -> CYBER TREE) ====== /
+/ Zoom-out ပြန်ဆုတ်သွားခြင်း လုံးဝမရှိဘဲ တစ်ခါတည်း တိုက်ရိုက် Zoom-in ဆွဲဝင်သွားစေခြင်း */
 .time-machine.zoom-out {
-animation: tm-cinematic-exit 2.4s cubic-bezier(0.65, 0, 0.15, 1) forwards;
+animation: tm-cinematic-exit 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 pointer-events: none;
 }
 
 @keyframes tm-cinematic-exit {
 0% {
-transform: perspective(1000px) translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+transform: perspective(1000px) translate3d(0, 0, 0) scale(1);
 opacity: 1;
 }
-30% {
-transform: perspective(1000px) translate3d(0, 0, -90px) scale(0.92) rotateZ(-2.5deg);
-opacity: 0.95;
-}
 100% {
-transform: perspective(1000px) translate3d(0, 0, 750px) scale(2.8) rotateZ(8deg);
+transform: perspective(1000px) translate3d(0, 0, 720px) scale(2.65);
 opacity: 0;
 }
 }
@@ -396,20 +393,21 @@ opacity: 0;
 }
 }
 
-/* Cyber/Ethno Intermediate Container Styles */
+/* Cyber/Ethno Intermediate Container Styles /
+/ အနောက်မှ အရှေ့သို့ တစ်သမတ်တည်း Zoom-in (0.86 -> 1.0) ဆွဲဝင်ပေါ်ထွက်လာစေခြင်း */
 #cyber-ethno-container {
 position: fixed;
 inset: 0;
 z-index: 5;
 opacity: 0;
 visibility: hidden;
-transform: scale3d(1.18, 1.18, 1);
+transform: scale3d(0.86, 0.86, 1);
 will-change: opacity, transform;
 backface-visibility: hidden;
 transition:
-opacity 2.2s cubic-bezier(0.22, 1, 0.36, 1),
-transform 2.6s cubic-bezier(0.16, 1, 0.3, 1),
-visibility 2.2s;
+opacity 2.0s cubic-bezier(0.22, 1, 0.36, 1),
+transform 2.2s cubic-bezier(0.16, 1, 0.3, 1),
+visibility 2.0s;
 }
 
 #cyber-ethno-container.visible {
@@ -970,7 +968,6 @@ visibility: visible;
 
 .music-progress-bar {
 -webkit-appearance: none;
-appearance: none;
 width: 100%;
 height: 5px;
 background: rgba(255, 255, 255, 0.3);
