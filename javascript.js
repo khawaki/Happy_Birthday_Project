@@ -2467,7 +2467,7 @@ const songs = [
     name: "Happy Birthday Bae Bae",
     artist: "Special Wish",
     // GitHub Pages / Custom Domain တွင် CORS Error လုံးဝမတက်စေရန် သီချင်းဖိုင်ကို Project Folder ထဲတွင် song.mp3 အမည်ဖြင့် ထည့်သွင်းအသုံးပြုပါ
-    source: "song.mp3", 
+    source: "./song.mp3", 
     cover: "photo1.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
   }
 ];
