@@ -88,7 +88,6 @@ justify-content: center;
 align-items: center;
 }
 
-/* 3x3 ဇယားကွက်နှင့် ဘောင် (Frame) — Fade Out ဖြစ်သွားမည့် အပိုင်း */
 .photo-matrix-wrapper {
 position: relative;
 z-index: 2;
@@ -141,7 +140,7 @@ background: var(--color-umber);
 box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.85);
 }
 
-/* 3D Drum / Reel Depth Shadow Overlay (အပေါ်/အောက် လှိမ့်ဝင်သွားသည့် Slot Reel အရိပ်) */
+
 .photo-cell::after {
 content: "";
 position: absolute;
@@ -158,12 +157,10 @@ rgba(14, 10, 7, 0.72) 100%
 transition: box-shadow 0.3s ease;
 }
 
-/* Roll ဖြစ်နေစဉ် ရွှေရောင်အလင်းဘောင်လေး ပေါ်လာစေခြင်း */
 .photo-matrix-wrapper.rolling .photo-cell {
 border-color: var(--color-gold-bright);
 }
 
-/* Track ၏ အမြင့်ကို အကွက်ပေါင်း (steps * 100%) အတိအကျ ပေးထားပြီး တစ်ကွက်ချင်းစီ အတိအကျ ချိန်သားကိုက် ရပ်တန့်စေခြင်း */
 .photo-cell__track {
 display: flex;
 flex-direction: column;
@@ -174,7 +171,6 @@ transform: translate3d(0, 0, 0);
 backface-visibility: hidden;
 }
 
-/* အပေါ်သို့ ဆွဲတင်သော Roll Animation (Year Counter နှင့် တိကျစွာ ချိန်သားကိုက်) */
 .photo-cell__track.roll-up {
 transform: translate3d(0, 0%, 0);
 }
@@ -183,7 +179,6 @@ transform: translate3d(0, 0%, 0);
 animation: photo-roll-up var(--time-duration) var(--time-easing) both;
 }
 
-/* အောက်သို့ ဆွဲချသော Roll Animation (Year Counter နှင့် တိကျစွာ ချိန်သားကိုက်) */
 .photo-cell__track.roll-down {
 transform: translate3d(0, calc(-100% * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
 }
@@ -211,7 +206,6 @@ filter: sepia(0.22) contrast(1.06) brightness(0.95);
 transform: translateZ(0);
 }
 
-/* 3x3 ဘောင် ပျောက်သွားပြီးမှ ပေါ်လာမည့် သီးသန့် Video Clip / Photo (id="foryou") */
 .birthday-reveal {
 position: absolute;
 inset: 0;
@@ -255,8 +249,6 @@ box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
 background: #0e0a07;
 }
 
-/* ====== ULTRA-SMOOTH GPU PORTAL TRANSITION (TIME MACHINE -> CYBER TREE) ====== /
-/ Zoom-out ပြန်ဆုတ်သွားခြင်း လုံးဝမရှိဘဲ တစ်ခါတည်း တိုက်ရိုက် Zoom-in ဆွဲဝင်သွားစေခြင်း */
 .time-machine.zoom-out {
 animation: tm-cinematic-exit 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 pointer-events: none;
@@ -393,8 +385,6 @@ opacity: 0;
 }
 }
 
-/* Cyber/Ethno Intermediate Container Styles /
-/ အနောက်မှ အရှေ့သို့ တစ်သမတ်တည်း Zoom-in (0.86 -> 1.0) ဆွဲဝင်ပေါ်ထွက်လာစေခြင်း */
 #cyber-ethno-container {
 position: fixed;
 inset: 0;
@@ -416,7 +406,7 @@ visibility: visible;
 transform: scale3d(1, 1, 1);
 }
 
-/* Cyberpunk Tree မှ Galaxy သို့ ကူးပြောင်းချိန်တွင် Zoom-out ပြန်မဖြစ်စေဘဲ ရှေ့သို့ တစ်သမတ်တည်း Zoom-in ဆွဲဝင်ပျောက်ကွယ်သွားမည့် Transition */
+
 #cyber-ethno-container.zoom-out {
 transform: scale3d(2.35, 2.35, 1);
 opacity: 0;
@@ -596,7 +586,6 @@ to { transform: scale(1.1); opacity: 0.9; }
 100% { stroke-dashoffset: 35; opacity: 1; }
 }
 
-/* Galaxy Container Styles (Seamless Cosmic Emergence) */
 #galaxy-container {
 position: fixed;
 inset: 0;
@@ -1036,7 +1025,6 @@ fill: currentColor;
 display: none;
 }
 
-/* ====== SURPRISE GIFT BOX, PLUSHIE DOLLS & PHOTO BOUQUET FINALE ====== */
 .song-status-pill {
 display: inline-flex;
 align-items: center;
