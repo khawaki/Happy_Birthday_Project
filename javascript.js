@@ -3,16 +3,11 @@ import { OrbitControls } from "https://esm.sh/three@0.136.0/examples/jsm/control
 import { OBJLoader } from 'https://esm.sh/three@0.136.0/examples/jsm/loaders/OBJLoader';
 import { MeshSurfaceSampler } from 'https://esm.sh/three@0.136.0/examples/jsm/math/MeshSurfaceSampler';
 import * as BufferGeometryUtils from 'https://esm.sh/three@0.136.0/examples/jsm/utils/BufferGeometryUtils';
-
 import { EffectComposer } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/UnrealBloomPass.js';
-
-// ====== AMBIENT BACKGROUND MUSIC (background.mp3) LOGIC ======
-// Domain စပွင့်လာသည်နှင့် နောက်ခံအသံအနေတော် (volume = 0.35) ဖြင့် စတင်ဖွင့်ပေးပြီး
-// Galaxy မှ ဆုတောင်းစာ ("Birthday Wishes 🎂") သို့ ပြောင်းချိန်တွင် လုံးဝရပ်တန့်ပေးမည်
-const AMBIENT_BG_VOLUME = 0.35; // နောက်ခံသီချင်း အသံအတိုးအကျယ် (0.0 မှ 1.0 အတွင်း စိတ်ကြိုက်ချိန်ညှိနိုင်သည်)
+const AMBIENT_BG_VOLUME = 0.5; 
 let ambientBgAudio = document.getElementById("ambientBgAudio");
 if (!ambientBgAudio) {
   ambientBgAudio = new Audio("./background.mp3");
@@ -37,7 +32,6 @@ ambientBgAudio.addEventListener("error", () => {
     }
   }
 });
-
 function startAmbientBgMusic() {
   if (ambientMusicStoppedPermanently || !ambientBgAudio) return;
   ambientBgAudio.muted = false;
@@ -45,7 +39,6 @@ function startAmbientBgMusic() {
     ambientBgAudio.play().catch(() => {});
   }
 }
-
 function stopAmbientBgMusicPermanently() {
   ambientMusicStoppedPermanently = true;
   if (ambientBgAudio) {
@@ -56,13 +49,11 @@ function stopAmbientBgMusicPermanently() {
   }
 }
 
-// ====== REAL-TIME AUDIO ANALYSER FOR BEAT-REACTIVE PARTICLES ======
 let audioCtx = null;
 let bgAnalyser = null;
 let bgDataArray = null;
 let bgAudioSourceConnected = false;
 let smoothedBeat = 0;
-
 function initAmbientAudioAnalyser() {
   if (bgAudioSourceConnected || !ambientBgAudio) return;
   try {
@@ -74,8 +65,8 @@ function initAmbientAudioAnalyser() {
     }
     bgAnalyser = audioCtx.createAnalyser();
     bgAnalyser.fftSize = 128;
-    // အမှုန်များ အရမ်းမြန်မြန် မခုန်စေရန် Smoothing ကို 0.88 သို့ မြှင့်တင်ထားသည်
-    bgAnalyser.smoothingTimeConstant = 0.88;
+
+    bgAnalyser.smoothingTimeConstant = 0.80;
     const source = audioCtx.createMediaElementSource(ambientBgAudio);
     source.connect(bgAnalyser);
     bgAnalyser.connect(audioCtx.destination);
@@ -85,8 +76,6 @@ function initAmbientAudioAnalyser() {
     console.warn("Web Audio Analyser fallback:", err);
   }
 }
-
-// Frame တိုင်းတွင် background.mp3 ၏ Bass စည်းချက်ကို ညင်သာချောမွေ့စွာ (0.0 မှ 0.55 အတွင်း) တွက်ချက်ပေးမည့် Function
 function getAmbientAudioBeat() {
   if (ambientMusicStoppedPermanently || !ambientBgAudio || ambientBgAudio.paused) {
     smoothedBeat *= 0.92;
@@ -103,19 +92,14 @@ function getAmbientAudioBeat() {
       bassSum += bgDataArray[i];
     }
     const avgBass = bassSum / (bassBins * 255);
-    // အရမ်းကြမ်းတမ်းစွာ မခုန်စေဘဲ သီချင်းသံအတိုင်း ညင်သာစွာ စီးမျောခုန်ပေါက်စေရန် ကန့်သတ်ထားသည်
     const gentleTarget = Math.min(0.55, Math.pow(avgBass, 1.35) * 0.75);
     const lerpSpeed = gentleTarget > smoothedBeat ? 0.14 : 0.08;
     smoothedBeat += (gentleTarget - smoothedBeat) * lerpSpeed;
     return smoothedBeat;
   }
-  // Fallback gentle rhythmic pulse
   const t = performance.now() * 0.003;
   return (Math.sin(t) * 0.5 + 0.5) * 0.25;
 }
-
-// Website ပွင့်လာသည်နှင့် Auto-play စတင်ကြိုးစားမည်။
-// အကယ်၍ Browser က Auto-play တားဆီးထားပါက မျက်နှာပြင်ပေါ် ပထမဆုံး ထိလိုက်/နှိပ်လိုက်သည်နှင့် ချက်ချင်း ပွင့်လာမည်။
 startAmbientBgMusic();
 window.addEventListener("DOMContentLoaded", startAmbientBgMusic);
 window.addEventListener("load", startAmbientBgMusic);
@@ -132,8 +116,6 @@ const unlockAmbientOnFirstInteraction = () => {
 ["click", "touchstart", "pointerdown", "keydown"].forEach(evt => {
   window.addEventListener(evt, unlockAmbientOnFirstInteraction, { passive: true });
 });
-
-// ====== GLSL SHADER CHUNKS FOR CYBER/ETHNO SCENE ======
 let darkenMaterial = `
   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0), globalBloom);
 `;
@@ -708,8 +690,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
   let l = new THREE.Line(g, m);
   l.computeLineDistances();
   scene.add(l);
-
-  // <BEETLES>
   let beetlePts = [
     [-1, 1], [0, 0], [1, 1],
     [-0.5, -1], [0, -0.5], [0.5, -1]
@@ -751,7 +731,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
           vec3 iPos = instPos;
           iPos.x = -7. + mod(instPos.x - (-7.) + time * 0.75, 14.);
           iPos.y += sin(iPos.x + instPhase * 7.) * (0.5 * instPhase + 0.5);
-          // ပိုးစုန်းကြူးအမှုန်လေးများ သီချင်း Beat အတိုင်း ညင်သာစွာ လိုက်လှုပ်ရှားစေခြင်း
           iPos.y += sin(time * 4.0 + instPhase * 12.0) * audioBeat * 0.18;
           iPos.z += sin(iPos.x * 0.5) * (instPhase - 0.5) * 2.;
           
@@ -1027,7 +1006,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
             transformed += newPos * (1.0 + fillFactor * 0.16) + fillOffset;
 
             // ====== CYBERPUNK TREE GENTLE BEAT-REACTIVE SWAY (FOLIAGE ONLY) ======
-            // သစ်ပင်နားရှိ အရွက်အမှုန်များသာ သီချင်းစည်းချက်အတိုင်း ညင်သာစွာ လိုက်ခုန်ပြီး စာသားအမှုန်များ လုံးဝမခုန်စေရန်
             float particleRhythm = sin(aRandom.x * 20.0 + time * 3.8) * 0.5 + 0.5;
             vec3 radialOutDir = normalize(vec3(position.x, 0.25, position.z) + treeNor.xyz * 0.6);
             vec3 treeBeatBounce = radialOutDir * (audioBeat * (0.12 + 0.24 * dist) * (0.4 + 0.6 * particleRhythm));
@@ -1073,7 +1051,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
             float microY = cos(time * (2.0 + aRandom.y * 2.0) + aRandom.z * 6.28) * 0.008;
             float waveY = sin(time * 1.6 + activeTarget.x * 1.1) * 0.022;
 
-            // စာသားအမှုန်များကို သီချင်း Beat ကြောင့် လုံးဝမခုန်စေဘဲ ကြည်လင်ပြတ်သားစွာ ဖတ်ရှုနိုင်အောင် မူလအတိုင်း တည်ငြိမ်စွာ ထားရှိခြင်း
             vec3 localOffset = (activeTarget + fluffyDispersion) * textScale;
 
             vec3 textWorldPos = textCenter
@@ -1114,7 +1091,7 @@ window.initCyberEthno = function(prewarmOnly = false) {
           `gl_PointSize = size;`,
           `float d = 1. - dist;
             d = pow(d, 2.7);
-            // သစ်ပင်အရွက်အမှုန်များသာ သီချင်း Beat အတိုင်း အရွယ်အစား ညင်သာစွာ လင်းလက်ပြီး စာသားအမှုန်အရွယ်အစားကို တည်ငြိမ်စွာ ထားရှိခြင်း
+
             float beatSizeBoost = 1.0 + audioBeat * (0.28 + 0.18 * sin(aRandom.x * 30.0 + time * 4.5));
             float foliageSize = size * (0.75 + 0.25 * d) * (1.0 + fillFactor * 0.22) * beatSizeBoost;
             float scatterSparkle = 1.0 + vScatterEnvelope * (0.35 * sin(time * 14.0 + aRandom.z * 40.0));
@@ -1300,7 +1277,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
       bloomPass.strength = 5.0 - smoothWarp * 1.6;
     } else {
       gu.time.value = t;
-      // Cyberpunk သစ်ပင်၏ Neon Bloom အလင်းရောင်ကိုလည်း မျက်စိမကျိန်းစေဘဲ ညင်သာစွာသာ လင်းလက်စေခြင်း
       bloomPass.strength = 4.9 + currentBeat * 0.65;
     }
 
@@ -1576,7 +1552,6 @@ function animateClockHandsReliable() {
 engageBtn.addEventListener("click", () => {
   engageBtn.classList.add("hidden");
 
-  // ခလုတ်နှိပ်ချိန်တွင် background.mp3 မပွင့်သေးပါက သေချာပေါက် ပွင့်လာစေရန်နှင့် Audio Analyser ချိတ်ဆက်ရန် နှိုးဆော်ပေးမည်
   initAmbientAudioAnalyser();
   startAmbientBgMusic();
 
@@ -1612,7 +1587,7 @@ engageBtn.addEventListener("click", () => {
     setTimeout(() => {
       birthdayReveal.classList.add("visible");
 
-      // foryou.mp4 ဗီဒီယို ပွင့်လာချိန်တွင် ဗီဒီယိုအသံကို ကြည်လင်စွာ ကြားရစေရန် background.mp3 ကို အသံခေတ္တတိုးပေးထားမည်
+
       if (ambientBgAudio && !ambientMusicStoppedPermanently) {
         ambientBgAudio.volume = 0.06;
       }
@@ -1650,7 +1625,7 @@ engageBtn.addEventListener("click", () => {
               forYouVideoEl.muted = true;
               forYouVideoEl.volume = 0;
             }
-            // ဗီဒီယိုပိတ်သွားသည်နှင့် background.mp3 အသံကို မူလအနေတော် (0.35) သို့ ပြန်တင်ပေးမည်
+
             if (ambientBgAudio && !ambientMusicStoppedPermanently) {
               ambientBgAudio.volume = AMBIENT_BG_VOLUME;
             }
@@ -2041,7 +2016,6 @@ function initGalaxy() {
       bgPhotoRings.push(ringGroup);
     });
 
-    // ====== GLSL SHADER: PARTIAL GALAXY TO "Happy Birthday Bae Bae" TEXT & FIREWORKS ======
     const particleCount = 70000;
     const textPoints = generateTextPoints();
     const numTextPoints = textPoints.length / 3;
@@ -2172,7 +2146,6 @@ function initGalaxy() {
             float jitterY = cos(uTime * (speed * 1.15) + phaseY) * (0.18 + rnd.z * 0.25);
             float jitterZ = sin(uTime * (speed * 0.85) + phaseZ) * (0.4 + rnd.x * 0.6);
 
-            // "Happy Birthday Bae Bae" စာသားပေါ်ရှိ အမှုန်များကို သီချင်း Beat ကြောင့် လုံးဝမခုန်စေဘဲ ရှင်းလင်းပြတ်သားစွာ မြင်ရစေရန် တည်ငြိမ်စွာ ထားရှိခြင်း
             vec3 center = vec3(0.0, 25.5, 0.0);
             float localX = (target.x * uTextScale) + jitterX * uTextScale;
             float localY = ((target.y - 27.0) * uTextScale) + (waveY + jitterY) * uTextScale;
@@ -2815,7 +2788,7 @@ window.triggerGiftFinaleSequence = function() {
       giftBox.classList.add('appear', 'shaking');
     }
     if (captionText) {
-      captionText.textContent = "သင့်အတွက် အထူးမွေးနေ့လက်ဆောင်ထုပ်လေး ပွင့်တော့မယ်နော်... 🎁✨";
+      captionText.textContent = "🎁✨";
     }
   }, 300);
 
@@ -2839,7 +2812,7 @@ function openGiftBoxAndRevealAll() {
   }
 
   if (captionText) {
-    captionText.textContent = "ချစ်စရာ အရုပ်ကလေးတွေ ထွက်လာပါပြီ... 🧸🐰🐱";
+    captionText.textContent = "🧸🐰🐱";
   }
   dolls.forEach((doll, idx) => {
     setTimeout(() => {
@@ -3055,7 +3028,6 @@ toLoveStoryBtn.addEventListener("click", () => {
   toLoveStoryBtn.classList.add("activating");
   toLoveStoryBtn.textContent = "OPENING WISHES 🎂";
 
-  // Galaxy မှ ဆုတောင်းစာသို့ ပြောင်းသည့်ခလုတ်ကို နှိပ်လိုက်သည်နှင့် background.mp3 ကို လုံးဝရပ်တန့်ပြီး ./song.mp3 ကို ဖွင့်ပေးမည်
   stopAmbientBgMusicPermanently();
   playSong();
   document.getElementById('music-player-controls').classList.add('visible');
