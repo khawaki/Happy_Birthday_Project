@@ -1146,7 +1146,8 @@ window.initCyberEthno = function(prewarmOnly = false) {
 
       gu.time.value = t + smoothWarp * 3.5;
 
-      camera.fov = baseCyberFov + smoothWarp * 20;
+      // Zoom-out ပြန်ဖြစ်သွားခြင်းကို ကာကွယ်ရန် FOV ကို တိုးမည့်အစား အနည်းငယ် လျှော့ချ၍ အတွင်းသို့ တစ်သမတ်တည်း Zoom-in ဆွဲဝင်ပျောက်ကွယ်စေခြင်း
+      camera.fov = Math.max(14, baseCyberFov - smoothWarp * 26);
       camera.updateProjectionMatrix();
 
       bloomPass.strength = 5.0 - smoothWarp * 1.6;
@@ -1185,18 +1186,51 @@ const galaxyContainer = document.getElementById("galaxy-container");
 const toLoveStoryBtn = document.getElementById("toLoveStoryBtn");
 const loveStoryContainer = document.getElementById("love-story-container");
 
-// Upload လုပ်ပေးထားသော ပုံ (၉) ပုံ
+// Upload လုပ်ပေးထားသော ပုံ (၉) ပုံ (VS Code Project Folder ထဲတွင် ထားရှိရမည့် ပုံအမည်များ)
 const uploadedPhotos = [
-  "1794399514264.heif",
-  "1794399514352.heif",
-  "1794399514436.heif",
-  "18537.jpg",
-  "18573.jpg",
-  "30419.jpg",
-  "30418.jpg",
-  "30416.jpg",
-  "30417.jpg"
+  "photo1.jpg",
+  "photo2.jpg",
+  "photo3.jpg",
+  "photo4.jpg",
+  "photo5.jpg",
+  "photo6.jpg",
+  "photo7.jpg",
+  "photo8.jpg",
+  "photo9.jpg"
 ];
+
+// 3x3 ဘောင် ပျောက်သွားပြီးနောက် သီးသန့်ပေါ်လာမည့် ၁၁ စက္ကန့်စာ Video Clip (id="foryou" အတွက် ဗီဒီယိုဖိုင်အမည်)
+const forYouSpecialVideo = "foryou.mp4";
+let forYouVideoEl = document.getElementById("foryou");
+
+// အကယ်၍ index.html ထဲတွင် <img> အဟောင်း ကျန်နေခဲ့ပါကလည်း <video> အဖြစ် အလိုအလျောက် ပြောင်းလဲပေးမည်
+if (forYouVideoEl && forYouVideoEl.tagName.toLowerCase() !== "video") {
+  const newVideo = document.createElement("video");
+  newVideo.id = "foryou";
+  newVideo.className = "foryou-full-video";
+  newVideo.src = forYouSpecialVideo;
+  newVideo.muted = false;
+  newVideo.volume = 1.0;
+  newVideo.playsInline = true;
+  newVideo.loop = false;
+  newVideo.preload = "auto";
+  newVideo.setAttribute("playsinline", "");
+  newVideo.setAttribute("webkit-playsinline", "");
+  forYouVideoEl.replaceWith(newVideo);
+  forYouVideoEl = newVideo;
+} else if (forYouVideoEl) {
+  forYouVideoEl.src = forYouSpecialVideo;
+  forYouVideoEl.removeAttribute("muted");
+  forYouVideoEl.muted = false;
+  forYouVideoEl.volume = 1.0;
+  forYouVideoEl.loop = false;
+  forYouVideoEl.playsInline = true;
+  forYouVideoEl.setAttribute("playsinline", "");
+  forYouVideoEl.setAttribute("webkit-playsinline", "");
+  if (typeof forYouVideoEl.load === "function") {
+    forYouVideoEl.load();
+  }
+}
 
 // Array တစ်ခုကို Random ရောမွှေပေးသည့် Helper Function (Fisher-Yates Shuffle)
 function shuffleArray(arr) {
@@ -1252,22 +1286,34 @@ for (let i = 0; i < totalItems; i++) {
   dateTrack.appendChild(dateRow);
 }
 
-// 3x3 ဓာတ်ပုံဇယားကွက်အတွင်း အကွက်တစ်ကွက်စီ၌ မတူညီသော ပုံ (၅) ပုံစီ (5 Photos per Cell) ဖြင့် Random Roll လည်ပတ်စေရန် တည်ဆောက်ခြင်း
+// 3x3 ဓာတ်ပုံဇယားကွက်အတွင်း photo1 မှ photo9 တို့ကို နေရာအသေမထားဘဲ
+// စဖွင့်ချိန်၊ Roll လည်နေချိန်နှင့် အဆုံးသတ်ရပ်တန့်ချိန်တို့တွင် Random နေရာများဖြင့် ပေါ်လာစေရန် စီစဉ်ခြင်း
 const photoTracks = [];
 const cellConfigs = [
-  { dir: "roll-up",   steps: 25 }, // 5 photos x 5 cycles
-  { dir: "roll-down", steps: 30 }, // 5 photos x 6 cycles
-  { dir: "roll-up",   steps: 20 }, // 5 photos x 4 cycles
-  { dir: "roll-down", steps: 25 }, // 5 photos x 5 cycles
-  { dir: "roll-up",   steps: 30 }, // 5 photos x 6 cycles
-  { dir: "roll-down", steps: 20 }, // 5 photos x 4 cycles
-  { dir: "roll-up",   steps: 25 }, // 5 photos x 5 cycles
-  { dir: "roll-down", steps: 30 }, // 5 photos x 6 cycles
-  { dir: "roll-up",   steps: 25 }  // 5 photos x 5 cycles
+  { dir: "roll-up",   steps: 25 },
+  { dir: "roll-down", steps: 30 },
+  { dir: "roll-up",   steps: 20 },
+  { dir: "roll-down", steps: 25 },
+  { dir: "roll-up",   steps: 30 },
+  { dir: "roll-down", steps: 20 },
+  { dir: "roll-up",   steps: 25 },
+  { dir: "roll-down", steps: 30 },
+  { dir: "roll-up",   steps: 25 }
 ];
 
-uploadedPhotos.forEach((photoSrc, cellIdx) => {
-  const cfg = cellConfigs[cellIdx];
+// အစတွင် ပြသမည့် 3x3 ပုံ (၉) ပုံကို Random နေရာချထားခြင်း
+const initialGridPhotos = shuffleArray(uploadedPhotos);
+
+// Roll လည်ပတ်ပြီးနောက် အဆုံးသတ် ရပ်တန့်ချိန်တွင်လည်း မူလနေရာနှင့် မတူညီဘဲ ပုံ (၉) ပုံလုံး နေရာအသစ်များဖြင့် Random ပေါ်လာစေခြင်း
+let finalGridPhotos = shuffleArray(uploadedPhotos);
+for (let i = 0; i < finalGridPhotos.length; i++) {
+  if (finalGridPhotos[i] === initialGridPhotos[i]) {
+    const swapIdx = (i + 1) % finalGridPhotos.length;
+    [finalGridPhotos[i], finalGridPhotos[swapIdx]] = [finalGridPhotos[swapIdx], finalGridPhotos[i]];
+  }
+}
+
+cellConfigs.forEach((cfg, cellIdx) => {
   const cell = document.createElement("div");
   cell.className = "photo-cell";
 
@@ -1275,25 +1321,33 @@ uploadedPhotos.forEach((photoSrc, cellIdx) => {
   track.className = `photo-cell__track ${cfg.dir}`;
   track.style.setProperty("--cell-steps", cfg.steps);
 
-  // အကွက်တစ်ကွက်ချင်းစီအတွက် မူလပုံ (၁) ပုံ + အခြားပုံများထဲမှ Random ရွေးချယ်ထားသော ပုံ (၄) ပုံ = စုစုပေါင်း ပုံ (၅) ပုံစီ သီးသန့်စီစဉ်ခြင်း
-  const otherPhotos = uploadedPhotos.filter((_, idx) => idx !== cellIdx);
-  const randomFour = shuffleArray(otherPhotos).slice(0, 4);
-  const fivePhotosForCell = [photoSrc, ...randomFour];
+  const startPhoto = initialGridPhotos[cellIdx];
+  const endPhoto = finalGridPhotos[cellIdx];
 
-  let prevImgSrc = photoSrc;
+  // Roll-up သည် step 0 မှ စတင်ပြီး နောက်ဆုံး step (cfg.steps - 1) တွင် ရပ်တန့်သည်
+  // Roll-down သည် နောက်ဆုံး step (cfg.steps - 1) မှ စတင်ပြီး step 0 တွင် ရပ်တန့်သည်
+  const firstStepPhoto = cfg.dir === "roll-up" ? startPhoto : endPhoto;
+  const lastStepPhoto = cfg.dir === "roll-up" ? endPhoto : startPhoto;
+
+  let prevImgSrc = firstStepPhoto;
 
   for (let step = 0; step < cfg.steps; step++) {
     const item = document.createElement("div");
     item.className = "photo-cell__item";
 
     const img = document.createElement("img");
-    // အစ (step === 0) နှင့် အဆုံး (step === cfg.steps - 1) တွင် မိမိအကွက်၏ မူလပုံအမှန်ကို ပြသပြီး၊
-    // ကြားအဆင့်များတွင် ၎င်းအကွက်အတွက် သတ်မှတ်ထားသော ပုံ (၅) ပုံကို ကပ်လျက်မထပ်စေဘဲ Random Roll လှည့်ပတ်စေမည်
     let currentImgSrc;
-    if (step === 0 || step === cfg.steps - 1) {
-      currentImgSrc = photoSrc;
+
+    if (step === 0) {
+      currentImgSrc = firstStepPhoto;
+    } else if (step === cfg.steps - 1) {
+      currentImgSrc = lastStepPhoto;
     } else {
-      const candidates = fivePhotosForCell.filter(p => p !== prevImgSrc);
+      // ကြားအဆင့်များတွင် ပုံ (၉) ပုံလုံးထဲမှ ကပ်လျက်မထပ်စေဘဲ Random ရွေးချယ်၍ Roll လည်ပတ်စေခြင်း
+      let candidates = uploadedPhotos.filter(p => p !== prevImgSrc);
+      if (step === cfg.steps - 2) {
+        candidates = candidates.filter(p => p !== lastStepPhoto);
+      }
       currentImgSrc = candidates[Math.floor(Math.random() * candidates.length)];
     }
     prevImgSrc = currentImgSrc;
@@ -1320,10 +1374,58 @@ const lamp = document.getElementById("lamp");
 const statusText = document.getElementById("statusText");
 const temporalPortalOverlay = document.getElementById("temporalPortalOverlay");
 
+// နာရီလက်တံ (၃) ချောင်းလုံး Browser အားလုံးတွင် ချို့ယွင်းချက်မရှိ အတိအကျ လည်ပတ်စေမည့် Web Animations API Function
+function animateClockHandsReliable() {
+  const hourHand = clock.querySelector(".clock__hand--hour");
+  const minuteHand = clock.querySelector(".clock__hand--minute");
+  const secondHand = clock.querySelector(".clock__hand--second");
+
+  const animOptions = {
+    duration: 12000,
+    easing: "ease-in-out",
+    fill: "forwards"
+  };
+
+  if (hourHand && hourHand.animate) {
+    hourHand.animate(
+      [{ transform: "rotate(30deg)" }, { transform: "rotate(2160deg)" }],
+      animOptions
+    );
+  }
+  if (minuteHand && minuteHand.animate) {
+    minuteHand.animate(
+      [{ transform: "rotate(0deg)" }, { transform: "rotate(12960deg)" }],
+      animOptions
+    );
+  }
+  if (secondHand && secondHand.animate) {
+    secondHand.animate(
+      [{ transform: "rotate(180deg)" }, { transform: "rotate(51840deg)" }],
+      animOptions
+    );
+  }
+}
+
 engageBtn.addEventListener("click", () => {
   engageBtn.classList.add("hidden");
 
+  // ခလုတ်နှိပ်သည့်အချိန်တွင် ဗီဒီယိုကို ကြိုမဖွင့်ထားဘဲ အသံဖွင့်ခွင့် (Audio Gesture Unlock) သာ ခေတ္တယူထားပြီး ချက်ချင်း Pause ပြန်လုပ်ထားမည်။
+  // ထို့ကြောင့် ဗီဒီယိုသည် foryou ဘောင်ပေါ်လာသည့်အချိန်ကျမှသာ အစ (0s) မှ တိုက်ရိုက် စတင် Play မည်ဖြစ်ပါသည်။
+  if (forYouVideoEl && typeof forYouVideoEl.play === "function") {
+    forYouVideoEl.removeAttribute("muted");
+    forYouVideoEl.muted = false;
+    forYouVideoEl.volume = 1.0;
+    const unlockPromise = forYouVideoEl.play();
+    if (unlockPromise !== undefined) {
+      unlockPromise.then(() => {
+        forYouVideoEl.pause();
+        forYouVideoEl.currentTime = 0;
+      }).catch(() => {});
+    }
+  }
+
   clock.classList.add("active");
+  animateClockHandsReliable();
   yearTrack.classList.add("active");
   dateTrack.classList.add("active");
   photoMatrixWrapper.classList.add("rolling");
@@ -1344,12 +1446,20 @@ engageBtn.addEventListener("click", () => {
 
     // အဆင့် (၁): 3x3 ဇယားကွက်နှင့် သူ့ရဲ့ ဘောင် (Frame) ပါ အရင်ဆုံး Fade Out ဖြစ်သွားမည်
     photoMatrixWrapper.classList.add("fade-out");
-
-    // အဆင့် (၂): ဘောင် Fade Out ဖြစ်သွားပြီးမှ (900ms အကြာတွင်) "၂၂ နှစ်ပြည့် မွေးနေ့ ဆုတောင်းများ" စာသား ပေါ်လာမည်
+    // အဆင့် (၂): ဘောင် Fade Out ဖြစ်သွားပြီးမှ (900ms အကြာတွင်) foryou ဗီဒီယိုဘောင် ပေါ်လာသည်နှင့် တစ်ပြိုင်နက် ဗီဒီယိုကို အစမှ တန်း Play မည်
     setTimeout(() => {
       birthdayReveal.classList.add("visible");
 
-      // အဆင့် (၃): စာသားပေါ်လာပြီး ၃ စက္ကန့် (3000ms) အကြာတွင် အနုစိတ်ချောမွေ့သော Portal Transition စတင်မည်
+      if (forYouVideoEl && typeof forYouVideoEl.play === "function") {
+        forYouVideoEl.currentTime = 0;
+        forYouVideoEl.muted = false;
+        forYouVideoEl.volume = 1.0;
+        forYouVideoEl.play().catch(err => {
+          console.warn("Unmuted play blocked, retrying:", err);
+        });
+      }
+
+      // အဆင့် (၃): Video အရှည် ၁၁ စက္ကန့် (11000ms) အပြည့် ပြသပြီးသည့်အခါမှ Portal Transition စတင်မည်
       setTimeout(() => {
         requestAnimationFrame(() => {
           // 3D Camera Entrance ကို စတင်နှိုးဆော်ခြင်း
@@ -1366,11 +1476,19 @@ engageBtn.addEventListener("click", () => {
             cyberEthnoContainer.classList.add("visible");
           }, 320);
 
+          // Transition ပြီးဆုံးသွားသည်နှင့် Video ကို လုံးဝပိတ်သိမ်းမည်
           setTimeout(() => {
+            if (forYouVideoEl) {
+              if (typeof forYouVideoEl.pause === "function") {
+                forYouVideoEl.pause();
+              }
+              forYouVideoEl.muted = true;
+              forYouVideoEl.volume = 0;
+            }
             timeMachine.style.display = "none";
           }, 2500);
         });
-      }, 3000);
+      }, 11000);
     }, 900);
   }, 12000);
 });
@@ -1594,28 +1712,33 @@ function initGalaxy() {
       new THREE.MeshBasicMaterial({
         map: nebulaTex,
         side: THREE.BackSide,
-        transparent: true,
-        opacity: 0.75,
+        transparent: false,
         depthWrite: false
       })
     );
+    // Nebula နောက်ခံစက်လုံးကို အနောက်ဆုံးအလွှာ (-10) တွင် အမြဲဆွဲစေခြင်းဖြင့် ဓာတ်ပုံများပေါ်သို့ မွဲပြာရောင် လုံးဝမဖုံးအုပ်နိုင်တော့ပါ
+    nebulaSphere.renderOrder = -10;
     bgPhotoDomeGroup.add(nebulaSphere);
 
-    // ပုံတစ်ပုံချင်းစီကို Galaxy Theme နှင့် လိုက်ဖက်အောင် အနားသတ် Feathered Vignette နှင့် Cosmic Glow ဘောင်သွင်းပေးသည့် Function
+    // ပုံတစ်ပုံချင်းစီကို Galaxy Theme နှင့် လိုက်ဖက်အောင် Cosmic Glow ဘောင်သွင်းပေးသည့် Function
     function createCosmicFramedPhotoTexture(imgSource, indexLabel) {
       const c = document.createElement('canvas');
       c.width = 512;
       c.height = 640;
       const ctx = c.getContext('2d');
       const tex = new THREE.CanvasTexture(c);
+      // Zoom အနီး/အဝေး ပြောင်းလဲချိန်တွင် Mipmap ကြောင့် ပုံအရောင် မှိန်/ဝါးမသွားစေရန် LinearFilter သတ်မှတ်ခြင်း
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
 
       function drawCard(imageElement) {
         ctx.clearRect(0, 0, c.width, c.height);
 
-        // အပြင်ဘက် Cosmic Aura Glow
-        const outerGlow = ctx.createRadialGradient(256, 320, 90, 256, 320, 315);
-        outerGlow.addColorStop(0, 'rgba(195, 125, 255, 0.38)');
-        outerGlow.addColorStop(0.65, 'rgba(120, 60, 200, 0.14)');
+        // အပြင်ဘက် Cosmic Aura Glow (ပုံ၏ အပြင်ဘက် အနားသတ်တွင်သာ ရှိမည်)
+        const outerGlow = ctx.createRadialGradient(256, 320, 180, 256, 320, 315);
+        outerGlow.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        outerGlow.addColorStop(0.75, 'rgba(195, 125, 255, 0.28)');
         outerGlow.addColorStop(1, 'rgba(10, 2, 22, 0)');
         ctx.fillStyle = outerGlow;
         ctx.fillRect(0, 0, c.width, c.height);
@@ -1639,6 +1762,10 @@ function initGalaxy() {
         ctx.closePath();
         ctx.clip();
 
+        // ပုံ၏ အနောက်မှ အနက်ရောင်အခံကို အပြည့်ခံထားပေးခြင်းဖြင့် အနောက်က Nebula အရောင် လုံးဝမဖောက်နိုင်တော့ပါ
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(pad, pad, w, h);
+
         if (imageElement) {
           const imgRatio = imageElement.width / imageElement.height;
           const boxRatio = w / h;
@@ -1659,18 +1786,10 @@ function initGalaxy() {
           ctx.fillRect(pad, pad, w, h);
         }
 
-        // Galaxy အရောင်နှင့် တစ်သားတည်း ဖြစ်စေရန် Cosmic Lavender/Rose Tint နှင့် အနားသတ် Dark Vignette အုပ်ပေးခြင်း
-        const vignette = ctx.createRadialGradient(256, 320, 105, 256, 320, 325);
-        vignette.addColorStop(0, 'rgba(210, 150, 255, 0.05)');
-        vignette.addColorStop(0.58, 'rgba(95, 35, 155, 0.24)');
-        vignette.addColorStop(0.86, 'rgba(24, 6, 48, 0.72)');
-        vignette.addColorStop(1, 'rgba(5, 1, 12, 0.96)');
-        ctx.fillStyle = vignette;
-        ctx.fillRect(pad, pad, w, h);
-
-        // ဘောင်လိုင်းလေးများ (Subtle Glowing Cosmic Rim)
-        ctx.strokeStyle = 'rgba(235, 185, 255, 0.42)';
-        ctx.lineWidth = 4;
+        // ပုံပေါ်တွင် မွဲပြာပြာအရောင်အုပ်ခြင်း (Vignette / Color Tint) လုံးဝမထားတော့ဘဲ Original အရောင်အတိုင်း အပြည့်အဝ ကြည်လင်နေစေခြင်း
+        // ဘောင်လိုင်းလေးများ ပိုမိုပေါ်လွင်စေရန် (Bright Glowing Cosmic Rim)
+        ctx.strokeStyle = 'rgba(255, 235, 255, 0.95)';
+        ctx.lineWidth = 6;
         ctx.stroke();
 
         ctx.restore();
@@ -1697,11 +1816,11 @@ function initGalaxy() {
       createCosmicFramedPhotoTexture(src, idx + 1)
     );
 
-    // 360° စက်လုံးပတ်လည်တွင် အလွှာ ၃ လွှာ (အလယ်၊ အပေါ်၊ အောက်) ခွဲ၍ သူမ၏ ပုံများကို 360 အပြည့် ကွေးညွှတ်စီစဉ်ထားခြင်း
+    // 360° စက်လုံးပတ်လည်တွင် အလွှာ ၃ လွှာလုံး၌ မူရင်းပုံအရောင်အတိုင်း 100% (opacity: 1.0) တိတိကျကျ ပေါ်နေစေခြင်း
     const bgRingConfigs = [
-      { count: 9, radius: 195, y: 8,   panelW: 78, panelH: 98, tiltX: 0.0,   speed: -0.042, opacity: 0.56 },
-      { count: 9, radius: 220, y: 86,  panelW: 72, panelH: 90, tiltX: 0.24,  speed:  0.028, opacity: 0.40 },
-      { count: 9, radius: 220, y: -70, panelW: 72, panelH: 90, tiltX: -0.24, speed:  0.032, opacity: 0.38 }
+      { count: 9, radius: 195, y: 8,   panelW: 78, panelH: 98, tiltX: 0.0,   speed: -0.042, opacity: 1.0 },
+      { count: 9, radius: 220, y: 86,  panelW: 72, panelH: 90, tiltX: 0.24,  speed:  0.028, opacity: 1.0 },
+      { count: 9, radius: 220, y: -70, panelW: 72, panelH: 90, tiltX: -0.24, speed:  0.032, opacity: 1.0 }
     ];
 
     const bgPhotoRings = [];
@@ -1729,14 +1848,18 @@ function initGalaxy() {
         const mat = new THREE.MeshBasicMaterial({
           map: tex,
           transparent: true,
-          opacity: ringCfg.opacity,
-          depthWrite: false,
+          alphaTest: 0.05,
+          opacity: 1.0,
+          depthWrite: true,
+          depthTest: true,
+          toneMapped: false, // ACESFilmicToneMapping ကြောင့် ပုံအရောင် မွဲသွားခြင်းကို ကာကွယ်ပြီး မူရင်းအရောင်အတိုင်း ထားရှိခြင်း
           side: THREE.DoubleSide
         });
-        mat.userData = { baseOpacity: ringCfg.opacity, phase: i * 0.7 + rIdx * 1.3 };
+        mat.userData = { baseOpacity: 1.0, phase: i * 0.7 + rIdx * 1.3 };
         bgPhotoMaterials.push(mat);
 
         const mesh = new THREE.Mesh(panelGeo, mat);
+        mesh.renderOrder = -2;
         mesh.position.set(
           Math.cos(angle) * ringCfg.radius,
           ringCfg.y + Math.sin(i * 1.4) * 5.0,
@@ -2195,10 +2318,9 @@ function initGalaxy() {
           bgPhotoMaterials[i].opacity = bgPhotoMaterials[i].userData.baseOpacity * (1.0 - rProg * 0.55);
         }
       } else {
-        // 360° Background ပုံများ ညင်သာစွာ အလင်းအမှောင် Shimmer ဖြစ်နေစေခြင်း
+        // 360° Background ပုံများ အလင်းအမှောင် မပြောင်းဘဲ 100% Original အရောင်အတိုင်း အမြဲကြည်လင်နေစေခြင်း
         for (let i = 0; i < bgPhotoMaterials.length; i++) {
-          const mat = bgPhotoMaterials[i];
-          mat.opacity = mat.userData.baseOpacity * (0.88 + 0.12 * Math.sin(elapsedTime * 1.2 + mat.userData.phase));
+          bgPhotoMaterials[i].opacity = 1.0;
         }
       }
 
@@ -2286,8 +2408,8 @@ const songs = [
     name: "Happy Birthday Bae Bae",
     artist: "Special Wish",
     // သင့်စိတ်ကြိုက် သီချင်း MP3 Link ကို အောက်ပါနေရာတွင် အစားထိုးထည့်သွင်းပါ
-    source: "./happy-birthday-zenith.mp3, 
-    cover: "18537.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
+    source: "https://github.com/khawaki/music_player/releases/download/music/happy-birthday-zenith.mp3", 
+    cover: "photo1.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
   }
 ];
 let currentSongId = 0;
