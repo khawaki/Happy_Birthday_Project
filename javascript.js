@@ -1212,10 +1212,11 @@ if (forYouVideoEl && forYouVideoEl.tagName.toLowerCase() !== "video") {
   newVideo.muted = false;
   newVideo.volume = 1.0;
   newVideo.playsInline = true;
-  newVideo.loop = false;
+  newVideo.loop = true;
   newVideo.preload = "auto";
   newVideo.setAttribute("playsinline", "");
   newVideo.setAttribute("webkit-playsinline", "");
+  newVideo.setAttribute("loop", "");
   forYouVideoEl.replaceWith(newVideo);
   forYouVideoEl = newVideo;
 } else if (forYouVideoEl) {
@@ -1223,10 +1224,11 @@ if (forYouVideoEl && forYouVideoEl.tagName.toLowerCase() !== "video") {
   forYouVideoEl.removeAttribute("muted");
   forYouVideoEl.muted = false;
   forYouVideoEl.volume = 1.0;
-  forYouVideoEl.loop = false;
+  forYouVideoEl.loop = true;
   forYouVideoEl.playsInline = true;
   forYouVideoEl.setAttribute("playsinline", "");
   forYouVideoEl.setAttribute("webkit-playsinline", "");
+  forYouVideoEl.setAttribute("loop", "");
   if (typeof forYouVideoEl.load === "function") {
     forYouVideoEl.load();
   }
@@ -1409,19 +1411,16 @@ function animateClockHandsReliable() {
 engageBtn.addEventListener("click", () => {
   engageBtn.classList.add("hidden");
 
-  // ခလုတ်နှိပ်သည့်အချိန်တွင် ဗီဒီယိုကို ကြိုမဖွင့်ထားဘဲ အသံဖွင့်ခွင့် (Audio Gesture Unlock) သာ ခေတ္တယူထားပြီး ချက်ချင်း Pause ပြန်လုပ်ထားမည်။
-  // ထို့ကြောင့် ဗီဒီယိုသည် foryou ဘောင်ပေါ်လာသည့်အချိန်ကျမှသာ အစ (0s) မှ တိုက်ရိုက် စတင် Play မည်ဖြစ်ပါသည်။
+  // ပထမဆုံး အသံထွက်ခဲ့သည့် Loop ပုံစံအတိုင်း ခလုတ်နှိပ်ချိန်တွင် ဗီဒီယိုကို Pause မလုပ်ဘဲ Loop ဖြင့် တောက်လျှောက် Play ထားမည် (ပထမ ၁၂ စက္ကန့်အတွင်း အသံမထွက်စေရန် volume ကို 0 ထားမည်)
   if (forYouVideoEl && typeof forYouVideoEl.play === "function") {
     forYouVideoEl.removeAttribute("muted");
     forYouVideoEl.muted = false;
-    forYouVideoEl.volume = 1.0;
-    const unlockPromise = forYouVideoEl.play();
-    if (unlockPromise !== undefined) {
-      unlockPromise.then(() => {
-        forYouVideoEl.pause();
-        forYouVideoEl.currentTime = 0;
-      }).catch(() => {});
-    }
+    forYouVideoEl.loop = true;
+    forYouVideoEl.volume = 0;
+    forYouVideoEl.currentTime = 0;
+    forYouVideoEl.play().catch(err => {
+      console.warn("Initial video play warning:", err);
+    });
   }
 
   clock.classList.add("active");
@@ -1446,17 +1445,21 @@ engageBtn.addEventListener("click", () => {
 
     // အဆင့် (၁): 3x3 ဇယားကွက်နှင့် သူ့ရဲ့ ဘောင် (Frame) ပါ အရင်ဆုံး Fade Out ဖြစ်သွားမည်
     photoMatrixWrapper.classList.add("fade-out");
-    // အဆင့် (၂): ဘောင် Fade Out ဖြစ်သွားပြီးမှ (900ms အကြာတွင်) foryou ဗီဒီယိုဘောင် ပေါ်လာသည်နှင့် တစ်ပြိုင်နက် ဗီဒီယိုကို အစမှ တန်း Play မည်
+    // အဆင့် (၂): ဘောင် Fade Out ဖြစ်သွားပြီးမှ (900ms အကြာတွင်) foryou ဗီဒီယိုဘောင် ပေါ်လာသည်နှင့် အစ (0s) မှ အသံအပြည့် (volume = 1.0) ဖြင့် ပွင့်လာမည်
     setTimeout(() => {
       birthdayReveal.classList.add("visible");
 
-      if (forYouVideoEl && typeof forYouVideoEl.play === "function") {
-        forYouVideoEl.currentTime = 0;
+      if (forYouVideoEl) {
+        try {
+          forYouVideoEl.currentTime = 0;
+        } catch (e) {}
         forYouVideoEl.muted = false;
         forYouVideoEl.volume = 1.0;
-        forYouVideoEl.play().catch(err => {
-          console.warn("Unmuted play blocked, retrying:", err);
-        });
+        if (forYouVideoEl.paused && typeof forYouVideoEl.play === "function") {
+          forYouVideoEl.play().catch(err => {
+            console.warn("Video play retry:", err);
+          });
+        }
       }
 
       // အဆင့် (၃): Video အရှည် ၁၁ စက္ကန့် (11000ms) အပြည့် ပြသပြီးသည့်အခါမှ Portal Transition စတင်မည်
@@ -2407,8 +2410,8 @@ const songs = [
   {
     name: "Happy Birthday Bae Bae",
     artist: "Special Wish",
-    // သင့်စိတ်ကြိုက် သီချင်း MP3 Link ကို အောက်ပါနေရာတွင် အစားထိုးထည့်သွင်းပါ
-    source: "./happy-birthday-zenith.mp3", 
+    // GitHub Pages / Custom Domain တွင် CORS Error လုံးဝမတက်စေရန် သီချင်းဖိုင်ကို Project Folder ထဲတွင် song.mp3 အမည်ဖြင့် ထည့်သွင်းအသုံးပြုပါ
+    source: "song.mp3", 
     cover: "photo1.jpg" // Music Cover နေရာတွင် ပြသမည့် ပုံ
   }
 ];
