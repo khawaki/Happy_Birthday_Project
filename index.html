@@ -8,8 +8,8 @@
     <!-- Google Fonts for Love Story View & Myanmar Vintage Typography -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Noto+Serif+Myanmar:wght@600;700&family=Padauk:wght@700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <!-- Swiper & Kokomi for 3D Music Player -->
-    <script src='https://unpkg.com/swiper@11/swiper-element-bundle.min.js'></script>
-    <script src='https://unpkg.com/kokomi.js/build/kokomi.umd.js'></script>
+    <script src="https://unpkg.com/swiper@11/swiper-element-bundle.min.js"></script>
+    <script src="https://unpkg.com/kokomi.js/build/kokomi.umd.js"></script>
     <!-- Three.js legacy non-module build + OrbitControls (r128) -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -21,15 +21,24 @@
     <div class="time-machine" aria-label="Time travel from 14, 2004 to 14, 2026">
       <div class="time-machine__label">EINSTEIN'S TEMPORAL LABORATORY</div>
 
-      <!-- ပထမဆုံးနေရာရှိ 3x3 ဓာတ်ပုံဇယားကွက် (ဘောင်ပါ Fade Out ဖြစ်မည်) နှင့် "၂၂ နှစ်ပြည့် မွေးနေ့ ဆုတောင်းများ" စာသား -->
+      <!-- ပထမဆုံးနေရာရှိ 3x3 ဓာတ်ပုံဇယားကွက် (ဘောင်ပါ Fade Out ဖြစ်မည်) နှင့် သူမ၏ ၁၁ စက္ကန့်စာ Video Clip (id="foryou") -->
       <div class="photo-stage">
         <div class="photo-matrix-wrapper" id="photoMatrixWrapper">
           <div class="photo-matrix" id="photoMatrix" aria-label="Memory Photo Matrix"></div>
         </div>
         <div class="birthday-reveal" id="birthdayReveal" aria-live="polite">
-          <div class="birthday-reveal__ornament">✦ 14 · 2004 — 14 · 2026 ✦</div>
-          <div class="birthday-reveal__title">၂၂ နှစ်ပြည့် မွေးနေ့<br>ဆုတောင်းများ</div>
-          <div class="birthday-reveal__ornament">✦ ──────── ✦</div>
+          <video
+            id="foryou"
+            class="foryou-full-video"
+            src="foryou.mp4"
+            autoplay
+            loop
+            playsinline
+            webkit-playsinline
+            preload="auto"
+          >
+            <source src="foryou.mp4" type="video/mp4">
+          </video>
         </div>
       </div>
 
@@ -341,8 +350,8 @@
       </div>
     </div>
 
-    <!-- External JS Module for Cyber/Ethno Initialization -->
+    <!-- External JS Module -->
     <script type="module" src="javascript.js"></script>
-
   </body>
+
 </html>
