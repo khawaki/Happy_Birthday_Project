@@ -2696,7 +2696,7 @@ songEl.addEventListener("loadedmetadata", () => {
 });
 songEl.addEventListener("ended", () => {
   const statusText = document.getElementById('songStatusText');
-  if (statusText) statusText.textContent = "သီချင်းပြီးဆုံးသွားပါပြီ — လက်ဆောင်ထုပ်လေး ပွင့်လာပါပြီ 🎁✨";
+  if (statusText) statusText.textContent = "🎁✨";
   window.triggerGiftFinaleSequence();
 });
 
@@ -2797,7 +2797,7 @@ window.triggerGiftFinaleSequence = function() {
       giftBox.classList.add('appear', 'shaking');
     }
     if (captionText) {
-      captionText.textContent = "သင့်အတွက် အထူးမွေးနေ့လက်ဆောင်ထုပ်လေး ပွင့်တော့မယ်နော်... 🎁✨";
+      captionText.textContent = "🎁✨";
     }
   }, 300);
 
@@ -2821,7 +2821,7 @@ function openGiftBoxAndRevealAll() {
   }
 
   if (captionText) {
-    captionText.textContent = "ချစ်စရာ အရုပ်ကလေးတွေ ထွက်လာပါပြီ... 🧸🐰🐱";
+    captionText.textContent = "🧸🐰🐱";
   }
   dolls.forEach((doll, idx) => {
     setTimeout(() => {
