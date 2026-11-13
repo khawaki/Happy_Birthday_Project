@@ -54,6 +54,7 @@ flex-direction: column;
 justify-content: space-evenly;
 width: 100%;
 max-width: 440px;
+height: 94vh;
 height: 94dvh;
 max-height: 820px;
 align-items: center;
@@ -77,6 +78,8 @@ transform: translateZ(0);
 /* 3x3 Photo Grid & Birthday Message Stage */
 .photo-stage {
 position: relative;
+width: 170px;
+height: 170px;
 width: clamp(135px, 22dvh, 185px);
 height: clamp(135px, 22dvh, 185px);
 flex: 0 0 auto;
@@ -88,6 +91,7 @@ align-items: center;
 /* 3x3 ဇယားကွက်နှင့် ဘောင် (Frame) — Fade Out ဖြစ်သွားမည့် အပိုင်း */
 .photo-matrix-wrapper {
 position: relative;
+z-index: 2;
 width: 100%;
 height: 100%;
 display: flex;
@@ -117,8 +121,8 @@ pointer-events: none;
 
 .photo-matrix {
 display: grid;
-grid-template-columns: repeat(3, minmax(0, 1fr));
-grid-template-rows: repeat(3, minmax(0, 1fr));
+grid-template-columns: repeat(3, 1fr);
+grid-template-rows: repeat(3, 1fr);
 gap: 4px;
 width: 100%;
 height: 100%;
@@ -131,7 +135,7 @@ height: 100%;
 min-width: 0;
 min-height: 0;
 overflow: hidden;
-border: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+border: 1px solid rgba(201, 154, 82, 0.55);
 border-radius: 4px;
 background: var(--color-umber);
 box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.85);
@@ -164,7 +168,7 @@ border-color: var(--color-gold-bright);
 display: flex;
 flex-direction: column;
 width: 100%;
-height: calc(var(--cell-steps, 23) * 100%);
+height: calc(var(--cell-steps, 25) * 100%);
 will-change: transform;
 transform: translate3d(0, 0, 0);
 backface-visibility: hidden;
@@ -181,7 +185,7 @@ animation: photo-roll-up var(--time-duration) var(--time-easing) both;
 
 /* အောက်သို့ ဆွဲချသော Roll Animation (Year Counter နှင့် တိကျစွာ ချိန်သားကိုက်) */
 .photo-cell__track.roll-down {
-transform: translate3d(0, calc(-100% * (var(--cell-steps, 23) - 1) / var(--cell-steps, 23)), 0);
+transform: translate3d(0, calc(-100% * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
 }
 
 .photo-cell__track.roll-down.active {
@@ -189,9 +193,9 @@ animation: photo-roll-down var(--time-duration) var(--time-easing) both;
 }
 
 .photo-cell__item {
-flex: 0 0 calc(100% / var(--cell-steps, 23));
+flex: 0 0 calc(100% / var(--cell-steps, 25));
 width: 100%;
-height: calc(100% / var(--cell-steps, 23));
+height: calc(100% / var(--cell-steps, 25));
 min-height: 0;
 overflow: hidden;
 box-sizing: border-box;
@@ -207,46 +211,48 @@ filter: sepia(0.22) contrast(1.06) brightness(0.95);
 transform: translateZ(0);
 }
 
-/* 3x3 ဘောင် ပျောက်သွားပြီးမှ ပေါ်လာမည့် "၂၂ နှစ်ပြည့် မွေးနေ့ ဆုတောင်းများ" စာသား */
+/* 3x3 ဘောင် ပျောက်သွားပြီးမှ ပေါ်လာမည့် သီးသန့် Video Clip / Photo (id="foryou") */
 .birthday-reveal {
 position: absolute;
 inset: 0;
+z-index: 1;
 display: flex;
-flex-direction: column;
 justify-content: center;
 align-items: center;
-padding: 0.5rem;
+padding: 4px;
+border: 2px solid var(--color-gold-bright);
+border-radius: 10px;
+background: linear-gradient(145deg, #1b130d, #0e0a07);
+box-shadow:
+0 0 26px rgba(242, 211, 148, 0.4),
+inset 0 0 15px rgba(0, 0, 0, 0.85);
+box-sizing: border-box;
+overflow: hidden;
 opacity: 0;
+visibility: hidden;
 transform: scale(0.88);
-transition: opacity 1s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+transition: opacity 1s ease-out, transform 1s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 1s;
 pointer-events: none;
 }
 
 .birthday-reveal.visible {
+z-index: 3;
 opacity: 1;
+visibility: visible;
 transform: scale(1);
 }
 
-.birthday-reveal__ornament {
-color: var(--color-gold);
-font-size: 0.65rem;
-letter-spacing: 0.22em;
-margin-block: 0.25rem;
-opacity: 0.85;
-}
-
-.birthday-reveal__title {
-font-family: "Noto Serif Myanmar", "Padauk", var(--font-type), serif;
-font-size: clamp(1.25rem, 5.2vw, 1.65rem);
-font-weight: 700;
-color: #fff6dc;
-text-shadow:
-0 0 12px rgba(255, 220, 130, 0.9),
-0 0 28px rgba(201, 154, 82, 0.75),
-0 2px 6px rgba(0, 0, 0, 1);
-line-height: 1.55;
-letter-spacing: 0.04em;
-text-align: center;
+#foryou,
+.foryou-full-photo,
+.foryou-full-video {
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 6px;
+display: block;
+filter: sepia(0.12) contrast(1.05) brightness(0.98);
+box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+background: #0e0a07;
 }
 
 /* ====== ULTRA-SMOOTH GPU PORTAL TRANSITION (TIME MACHINE -> CYBER TREE) ====== */
@@ -261,12 +267,10 @@ transform: perspective(1000px) translate3d(0, 0, 0) scale(1) rotateZ(0deg);
 opacity: 1;
 }
 30% {
-/* အနောက်သို့ အနည်းငယ်ဆုတ်ပြီး အရှိန်ယူသည့် အနုစိတ် အဆင့် /
 transform: perspective(1000px) translate3d(0, 0, -90px) scale(0.92) rotateZ(-2.5deg);
 opacity: 0.95;
 }
 100% {
-/ ကင်မရာရှေ့သို့ ညင်သာချောမွေ့စွာ ဆွဲဝင်ပျောက်ကွယ်သွားခြင်း (CSS Blur မသုံးထားသဖြင့် လုံးဝမထစ်ပါ) */
 transform: perspective(1000px) translate3d(0, 0, 750px) scale(2.8) rotateZ(8deg);
 opacity: 0;
 }
@@ -414,14 +418,14 @@ visibility: visible;
 transform: scale3d(1, 1, 1);
 }
 
-/* Cyberpunk Tree မှ Galaxy သို့ မသိမသာ ချောမွေ့စွာ ပေါင်းစပ်ကူးပြောင်းမည့် GPU Transition */
+/* Cyberpunk Tree မှ Galaxy သို့ ကူးပြောင်းချိန်တွင် Zoom-out ပြန်မဖြစ်စေဘဲ ရှေ့သို့ တစ်သမတ်တည်း Zoom-in ဆွဲဝင်ပျောက်ကွယ်သွားမည့် Transition */
 #cyber-ethno-container.zoom-out {
-transform: scale3d(1.12, 1.12, 1);
+transform: scale3d(2.35, 2.35, 1);
 opacity: 0;
 pointer-events: none;
 transition:
-transform 2.6s cubic-bezier(0.22, 1, 0.36, 1),
-opacity 2.2s cubic-bezier(0.4, 0, 0.2, 1);
+transform 2.4s cubic-bezier(0.4, 0, 0.2, 1),
+opacity 2.0s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #cyber-ethno-container canvas {
@@ -469,7 +473,6 @@ transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 -webkit-tap-highlight-color: transparent;
 }
 
-/* Rotating Cyber Outer Ring */
 .fingerprint-btn::before {
 content: "";
 position: absolute;
@@ -481,7 +484,6 @@ pointer-events: none;
 transition: all 0.4s ease;
 }
 
-/* Pulsing Aura Ring */
 .fingerprint-btn::after {
 content: "";
 position: absolute;
@@ -510,7 +512,6 @@ stroke-dashoffset: 0;
 animation: fp-ridge-glow 3.5s ease-in-out infinite alternate;
 }
 
-/* Laser Scan Line inside circle */
 .fp-scan-line {
 position: absolute;
 left: 12%;
@@ -537,7 +538,6 @@ stroke: #88ffaa;
 filter: drop-shadow(0 0 10px rgba(136, 255, 170, 1));
 }
 
-/* Engaged / Pressed State */
 .fingerprint-btn:active,
 .fingerprint-btn.activating {
 transform: scale(0.94);
@@ -761,7 +761,6 @@ z-index: 1;
 pointer-events: none;
 }
 
-/* Progress Bar in Red/Gold */
 #love-story-container .progress-container {
 position: fixed;
 top: 0;
@@ -900,6 +899,7 @@ width: 100%;
 height: 100%;
 background: black;
 }
+
 #music-cover-bg {
 position: absolute;
 top: 50%;
@@ -914,11 +914,13 @@ display: flex;
 justify-content: center;
 align-items: center;
 }
+
 swiper-slide {
 position: relative;
 width: clamp(220px, 40vw, 320px);
 padding-bottom: 120px;
 }
+
 swiper-slide img {
 width: 100%;
 height: 100%;
@@ -928,6 +930,7 @@ object-fit: cover;
 border-radius: 16px;
 -webkit-box-reflect: below -6px linear-gradient(transparent, transparent, rgba(0, 0, 0, 0.4));
 }
+
 .vignette {
 position: absolute;
 top: 0;
@@ -938,6 +941,7 @@ box-shadow: 0 0 120px rgba(0, 0, 0, 0.95) inset;
 pointer-events: none;
 z-index: 2;
 }
+
 #music-player-controls {
 position: absolute;
 bottom: 25px;
@@ -958,19 +962,23 @@ border-radius: 20px;
 border: 1px solid rgba(255, 215, 0, 0.25);
 backdrop-filter: blur(12px);
 }
+
 #music-player-controls.visible {
 opacity: 1;
 visibility: visible;
 }
+
 .music-progress-bar {
 -webkit-appearance: none;
+appearance: none;
 width: 100%;
 height: 5px;
-background: rgba(255,255,255,0.3);
+background: rgba(255, 255, 255, 0.3);
 border-radius: 4px;
 overflow: hidden;
 cursor: pointer;
 }
+
 .music-progress-bar::-webkit-slider-thumb {
 -webkit-appearance: none;
 width: 10px;
@@ -978,12 +986,14 @@ height: 10px;
 background: var(--gold-accent);
 box-shadow: -10000px 0 0 10000px var(--gold-accent);
 }
+
 .music-info-row {
 display: flex;
 justify-content: space-between;
 align-items: center;
 color: white;
 }
+
 .music-track-info {
 flex: 1;
 white-space: nowrap;
@@ -991,15 +1001,19 @@ overflow: hidden;
 text-overflow: ellipsis;
 font-family: 'Poppins', sans-serif;
 }
+
 .music-track-info .song-name {
 font-weight: 600;
 font-size: 1.05rem;
 color: #fff6dc;
 }
-.music-track-info .divider, .music-track-info .song-artist {
+
+.music-track-info .divider,
+.music-track-info .song-artist {
 opacity: 0.65;
 font-size: 0.85rem;
 }
+
 .music-play-btn {
 cursor: pointer;
 width: 28px;
@@ -1010,14 +1024,17 @@ justify-content: center;
 align-items: center;
 transition: transform 0.2s ease;
 }
+
 .music-play-btn:active {
 transform: scale(0.9);
 }
+
 .music-play-btn svg {
 width: 100%;
 height: 100%;
 fill: currentColor;
 }
+
 .music-play-btn .hidden {
 display: none;
 }
@@ -1085,16 +1102,16 @@ pointer-events: all;
 .finale-scene-wrapper {
 position: relative;
 width: min(94vw, 430px);
+height: min(86vh, 690px);
 height: min(86dvh, 690px);
 display: flex;
 flex-direction: column;
 justify-content: flex-end;
 align-items: center;
-padding-bottom: 3.5dvh;
+padding-bottom: 3.5vh;
 box-sizing: border-box;
 }
 
-/* 3. ဓာတ်ပုံပန်းစည်း (Photo Bouquet) — လက်ဆောင်ထုပ်ထဲမှ နောက်ဆုံးပေါ်ထွက်လာမည့် အပိုင်း */
 .photo-bouquet {
 position: absolute;
 bottom: 135px;
@@ -1123,7 +1140,6 @@ from { transform: translateX(-50%) translateY(0) scale(1); }
 to { transform: translateX(-50%) translateY(-9px) scale(1.02); }
 }
 
-/* ပန်းစည်း အနောက်ခံ စက္ကူအုပ် (Kraft/Velvet Wrapping Cone) */
 .bouquet-back-wrap {
 position: absolute;
 bottom: 42px;
@@ -1151,7 +1167,6 @@ opacity: 0.94;
 z-index: 2;
 }
 
-/* ပန်းစည်းအတွင်းရှိ သူမ၏ ဓာတ်ပုံများ (9 Fan-Arranged Photo Blooms) */
 .bouquet-photos-grid {
 position: absolute;
 inset: 0;
@@ -1177,7 +1192,6 @@ box-sizing: border-box;
 transition: transform 0.35s ease, z-index 0s;
 }
 
-/* ဓာတ်ပုံတစ်ခုချင်းစီ အောက်ခြေ ပန်းရိုးတံလေး */
 .bouquet-photo-stem::before {
 content: "";
 position: absolute;
@@ -1190,7 +1204,6 @@ transform: translateX(-50%);
 z-index: -1;
 }
 
-/* ဓာတ်ပုံထောင့်နားက နှင်းဆီပွင့်ဖတ်လေး */
 .bouquet-photo-stem::after {
 content: "🌹";
 position: absolute;
@@ -1227,7 +1240,6 @@ from { transform: scale(0.9) rotate(-6deg); }
 to { transform: scale(1.12) rotate(6deg); }
 }
 
-/* ပန်းစည်း အရှေ့ဘက် စက္ကူအုပ်နှင့် ဖဲပြား (Front Bouquet Wrap & Ribbon Bow) */
 .bouquet-front-wrap {
 position: absolute;
 bottom: 18px;
@@ -1269,7 +1281,6 @@ white-space: nowrap;
 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.75), 0 0 15px rgba(255, 215, 0, 0.6);
 }
 
-/* 2. လက်ဆောင်ထုပ်ထဲမှ ခုန်ထွက်လာမည့် အရုပ်ကလေးများ (Cute Plushie Dolls Layer) */
 .plushie-dolls-layer {
 position: absolute;
 bottom: 105px;
@@ -1316,7 +1327,6 @@ height: 100%;
 overflow: visible;
 }
 
-/* 1. လက်ဆောင်ထုပ် (Luxury Surprise Gift Box) */
 .gift-box-assembly {
 position: relative;
 width: 148px;
@@ -1376,7 +1386,6 @@ background: linear-gradient(90deg, #d49b00, #ffd700, #fff3b0, #ffd700, #d49b00);
 transform: translateX(-50%);
 }
 
-/* အဖုံးပေါ်က ရွှေရောင်ဖဲပြား */
 .gift-box-bow {
 position: absolute;
 top: -26px;
@@ -1423,7 +1432,6 @@ overflow: hidden;
 z-index: 3;
 }
 
-/* လက်ဆောင်ဘူး အလယ်က ရွှေရောင်ဖဲကြိုး */
 .gift-box-body::before {
 content: "";
 position: absolute;
@@ -1446,7 +1454,6 @@ background: linear-gradient(180deg, #d49b00, #ffd700, #fff3b0, #ffd700, #d49b00)
 transform: translateY(-50%);
 }
 
-/* လက်ဆောင်ဘူးအတွင်းမှ တောက်ပထွက်လာမည့် ရွှေရောင်အလင်းတန်း */
 .gift-inner-glow {
 position: absolute;
 top: -35px;
@@ -1479,11 +1486,12 @@ min-height: 1.8em;
 
 @media (max-width: 600px) {
 .time-machine {
+height: 96vh;
 height: 96dvh;
 padding: 0.5rem 0.75rem;
 }
 .fingerprint-wrapper {
-bottom: 4.5dvh;
+bottom: 4.5vh;
 gap: 0.45rem;
 }
 .fingerprint-btn {
@@ -1495,7 +1503,7 @@ width: 40px;
 height: 40px;
 }
 .to-love-story-btn {
-bottom: 4dvh;
+bottom: 4vh;
 padding: 11px 24px;
 font-size: 0.78rem;
 }
@@ -1561,7 +1569,7 @@ display: none;
 position: absolute;
 z-index: -1;
 inset: 10px;
-border: 2px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
+border: 2px solid rgba(201, 154, 82, 0.35);
 content: "";
 pointer-events: none;
 border-radius: 16px;
@@ -1583,6 +1591,8 @@ color: var(--color-parchment-deep);
 /* Clock face */
 .clock {
 position: relative;
+width: 120px;
+height: 120px;
 width: clamp(100px, 18dvh, 132px);
 height: clamp(100px, 18dvh, 132px);
 flex: 0 0 auto;
@@ -1624,6 +1634,7 @@ from 0deg,
 var(--color-gold-bright) 0deg 1.2deg,
 transparent 1.2deg 30deg
 );
+-webkit-mask: radial-gradient(circle, transparent 0 83%, #000 84%);
 mask: radial-gradient(circle, transparent 0 83%, #000 84%);
 }
 
@@ -1633,11 +1644,11 @@ position: absolute;
 top: 50%;
 left: 50%;
 color: var(--color-parchment);
-font-size: clamp(0.5rem, 1.5dvh, 0.68rem);
+font-size: clamp(0.5rem, 1.5vh, 0.68rem);
 transform:
 translate(-50%, -50%)
 rotate(calc(var(--i) * 30deg))
-translateY(calc(clamp(100px, 18dvh, 132px) * -0.37))
+translateY(calc(clamp(100px, 18vh, 132px) * -0.37))
 rotate(calc(var(--i) * -30deg));
 }
 
@@ -1670,6 +1681,7 @@ border-radius: 50% 50% 0 0;
 background: var(--color-gold-bright);
 transform-origin: 50% 100%;
 box-shadow: 0 0 6px #f2d39444;
+will-change: transform;
 }
 
 .clock__hand--hour {
@@ -1678,29 +1690,29 @@ height: 25%;
 transform: rotate(30deg);
 }
 
-/* နာရီ၊ မိနစ်၊ စက္ကန့် လက်တံသုံးချောင်းကို အချိုးကျကျ လည်ပတ်ပြီး ၁၂ နာရီတိတိတွင် ရပ်တန့်စေခြင်း */
 .clock.active .clock__hand--hour {
-animation: spin-hour var(--time-duration) var(--time-easing) both;
+animation: spin-hour var(--time-duration) var(--time-easing) forwards;
 }
 
 .clock__hand--minute {
+width: 2.5px;
 height: 35%;
 transform: rotate(0deg);
 }
 
 .clock.active .clock__hand--minute {
-animation: spin-minute var(--time-duration) var(--time-easing) both;
+animation: spin-minute var(--time-duration) var(--time-easing) forwards;
 }
 
 .clock__hand--second {
-width: 1px;
+width: 1.5px;
 height: 39%;
 background: var(--color-red);
 transform: rotate(180deg);
 }
 
 .clock.active .clock__hand--second {
-animation: spin-second var(--time-duration) var(--time-easing) both;
+animation: spin-second var(--time-duration) var(--time-easing) forwards;
 }
 
 .clock__pin {
@@ -1708,6 +1720,7 @@ position: absolute;
 top: 50%;
 left: 50%;
 width: 10px;
+height: 10px;
 aspect-ratio: 1;
 border: 2px solid var(--color-gold-bright);
 border-radius: 50%;
@@ -1745,7 +1758,7 @@ flex-direction: column;
 align-items: center;
 justify-content: center;
 padding-right: 1rem;
-border-right: 1px solid color-mix(in srgb, var(--color-gold-deep) 60%, transparent);
+border-right: 1px solid rgba(138, 100, 49, 0.6);
 color: var(--color-parchment);
 }
 
@@ -1754,7 +1767,7 @@ color: var(--color-parchment);
 height: var(--year-row-height);
 overflow: hidden;
 color: var(--color-gold-bright);
-font-size: clamp(1.5rem, 4.2dvh, 2.3rem);
+font-size: clamp(1.5rem, 4.2vh, 2.3rem);
 font-variant-numeric: tabular-nums;
 line-height: var(--year-row-height);
 text-shadow: 0 0 18px #c99a5233;
@@ -1794,6 +1807,7 @@ font-size: 0.65rem;
 
 .time-machine__lamp {
 width: 7px;
+height: 7px;
 aspect-ratio: 1;
 border-radius: 50%;
 background: var(--color-lamp);
@@ -1806,6 +1820,8 @@ animation: lamp-pulse 1s ease-in-out infinite alternate;
 
 /* Temporal Engage Button */
 .time-machine__btn {
+position: relative;
+z-index: 25;
 background: linear-gradient(135deg, var(--color-umber-soft), var(--color-umber));
 color: var(--color-gold-bright);
 border: 2px solid var(--color-gold);
@@ -1820,6 +1836,7 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1
 transition: all 0.4s ease-in-out;
 opacity: 1;
 visibility: visible;
+pointer-events: auto;
 }
 
 .time-machine__btn.hidden {
@@ -1851,38 +1868,34 @@ font-family: var(--font-hand);
 letter-spacing: 0.05em;
 }
 
-/* Proportional Clock Hand Animations Landing Exactly at 12:00:00 (Multiple of 360deg) /
+/* Proportional Clock Hand Animations Landing Exactly at 12:00:00 (Multiple of 360deg) */
 @keyframes spin-hour {
-from {
+0% {
 transform: rotate(30deg);
 }
-to {
-/ 30deg မှ 720deg (360 * 2) သို့ လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
-transform: rotate(720deg);
+100% {
+transform: rotate(2160deg);
 }
 }
 
 @keyframes spin-minute {
-from {
+0% {
 transform: rotate(0deg);
 }
-to {
-/* နာရီလက်တံထက် ၁၂ ဆ ပိုမြန်စွာ (8280deg = 360 * 23) လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
-transform: rotate(8280deg);
+100% {
+transform: rotate(12960deg);
 }
 }
 
 @keyframes spin-second {
-from {
+0% {
 transform: rotate(180deg);
 }
-to {
-/* အမြန်ဆုံးနှုန်းဖြင့် (51840deg = 360 * 144) လည်ပတ်ပြီး ၁၂ နာရီတည့်တည့်တွင် ရပ်မည် */
+100% {
 transform: rotate(51840deg);
 }
 }
 
-/* အကွက်တစ်ကွက်စီရှိ ပုံ ၅ ပုံစီကို Random အရှိန်အနှေး/အမြန်၊ အပေါ်/အောက် Bounce များဖြင့် လှိမ့်တက်ပြီး နောက်ဆုံးပုံတွင် ကွက်တိရပ်တန့်မည့် Keyframes */
 @keyframes photo-roll-up {
 0% {
 transform: translate3d(0, 0%, 0);
@@ -1911,7 +1924,6 @@ filter: brightness(1);
 }
 }
 
-/* အကွက်တစ်ကွက်စီရှိ ပုံ ၅ ပုံစီကို Random အရှိန်အနှေး/အမြန်၊ အပေါ်/အောက် Bounce များဖြင့် လှိမ့်ဆင်းပြီး ပထမပုံတွင် ကွက်တိရပ်တန့်မည့် Keyframes */
 @keyframes photo-roll-down {
 0% {
 transform: translate3d(0, calc(-100% * (var(--cell-steps, 25) - 1) / var(--cell-steps, 25)), 0);
@@ -1940,7 +1952,6 @@ filter: brightness(1);
 }
 }
 
-/* Year Counter ကို အပေါ်အောက် Random ခုန်ပေါက်လည်ပတ်စေပြီးမှ 2026 တွင် တိကျစွာ ရပ်တန့်စေမည့် Keyframes */
 @keyframes random-year-spin {
 0% {
 transform: translate3d(0, 0%, 0);
@@ -1965,7 +1976,6 @@ transform: translate3d(0, calc(-100% * (var(--total-steps, 36) - 1) / var(--tota
 }
 }
 
-/* Date Counter ကိုလည်း Year Counter နှင့် မတူညီသော Random အချိုးအကွေ့များဖြင့် လည်ပတ်စေပြီးမှ 14 တွင် တိကျစွာ ရပ်တန့်စေမည့် Keyframes */
 @keyframes random-date-spin {
 0% {
 transform: translate3d(0, 0%, 0);
