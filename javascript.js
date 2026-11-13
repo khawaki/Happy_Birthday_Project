@@ -1782,7 +1782,7 @@ function initGalaxy() {
     const galaxy = new THREE.Group();
     scene.add(galaxy);
 
-    const phrases = ["Pinchecha ✨", " Hermosa 💛", "Mi Bebe", "Mi Cielito 🌌", "Hermosota ✨", "Mi Infinita ♾️", "Mi Todo", "Me Encantas 🥰", " Perla 💫", "Te Amo💛", "Mi Canción Favorita 🎶", "Unica 😊", "Mi Reina 👑", "Mi Amor", "Mi Mundo", "Mi Luz 🌠", "Mi Niña", "Mi Tesoro💛", "Mi Paz", "Mi Eterna", "Mi Sueño", "Mi Pensamiento Favorito", "Mi Bombom", "Mi Diosa", "Te Amo Infinitamente ♾️"];
+    const phrases = ["✨ချစ်စရာ ကောင်မလေး","အလှဆုံးလေး 💛","Mi BeBe","ကိုယ့်ရဲ့ကောင်းကင်လေး 🌌", "Hermosota✨","Mi Todo","Perla 💫","Mi Canción Favorita 🎶", "ကိုယ့်ရဲ့ကမ္ဘာလေး","ကိုယ့်ရဲ့အလင်းရောင်လေး 🌠","Mi Eterna","ကိုယ်အမြဲတမ်း တွေးနေရတဲ့အရာလေး","Mi Bombom", "ချီးထုတ်လေ"," Happy Birthday"];
     const phraseCount = Math.max(phrases.length * 6, 180);
     const arms = 5, radius = 82, maxH = 22;
 
