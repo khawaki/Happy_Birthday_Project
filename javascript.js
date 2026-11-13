@@ -9,6 +9,71 @@ import { RenderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postproces
 import { ShaderPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'https://esm.sh/three@0.136.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
+// ====== AMBIENT BACKGROUND MUSIC (background.mp3) LOGIC ======
+// Domain စပွင့်လာသည်နှင့် နောက်ခံအသံအနေတော် (volume = 0.35) ဖြင့် စတင်ဖွင့်ပေးပြီး
+// Galaxy မှ ဆုတောင်းစာ ("Birthday Wishes 🎂") သို့ ပြောင်းချိန်တွင် လုံးဝရပ်တန့်ပေးမည်
+const AMBIENT_BG_VOLUME = 0.35; // နောက်ခံသီချင်း အသံအတိုးအကျယ် (0.0 မှ 1.0 အတွင်း စိတ်ကြိုက်ချိန်ညှိနိုင်သည်)
+let ambientBgAudio = document.getElementById("ambientBgAudio");
+if (!ambientBgAudio) {
+  ambientBgAudio = new Audio("./background.mp3");
+  ambientBgAudio.id = "ambientBgAudio";
+  ambientBgAudio.loop = true;
+  ambientBgAudio.preload = "auto";
+  document.body.appendChild(ambientBgAudio);
+}
+ambientBgAudio.loop = true;
+ambientBgAudio.volume = AMBIENT_BG_VOLUME;
+
+let ambientMusicStoppedPermanently = false;
+const bgMusicCandidates = ["./background.mp3", "background.mp3", "./Background.mp3", "Background.mp3", "./BACKGROUND.MP3"];
+let bgMusicCandidateIdx = 0;
+
+ambientBgAudio.addEventListener("error", () => {
+  if (bgMusicCandidateIdx < bgMusicCandidates.length) {
+    ambientBgAudio.src = bgMusicCandidates[bgMusicCandidateIdx++];
+    ambientBgAudio.load();
+    if (!ambientMusicStoppedPermanently) {
+      ambientBgAudio.play().catch(() => {});
+    }
+  }
+});
+
+function startAmbientBgMusic() {
+  if (ambientMusicStoppedPermanently || !ambientBgAudio) return;
+  ambientBgAudio.muted = false;
+  if (ambientBgAudio.paused) {
+    ambientBgAudio.play().catch(() => {});
+  }
+}
+
+function stopAmbientBgMusicPermanently() {
+  ambientMusicStoppedPermanently = true;
+  if (ambientBgAudio) {
+    ambientBgAudio.pause();
+    ambientBgAudio.currentTime = 0;
+    ambientBgAudio.muted = true;
+    ambientBgAudio.volume = 0;
+  }
+}
+
+// Website ပွင့်လာသည်နှင့် Auto-play စတင်ကြိုးစားမည်။
+// အကယ်၍ Browser က Auto-play တားဆီးထားပါက မျက်နှာပြင်ပေါ် ပထမဆုံး ထိလိုက်/နှိပ်လိုက်သည်နှင့် ချက်ချင်း ပွင့်လာမည်။
+startAmbientBgMusic();
+window.addEventListener("DOMContentLoaded", startAmbientBgMusic);
+window.addEventListener("load", startAmbientBgMusic);
+
+const unlockAmbientOnFirstInteraction = () => {
+  if (!ambientMusicStoppedPermanently) {
+    startAmbientBgMusic();
+  }
+  ["click", "touchstart", "pointerdown", "keydown"].forEach(evt => {
+    window.removeEventListener(evt, unlockAmbientOnFirstInteraction);
+  });
+};
+["click", "touchstart", "pointerdown", "keydown"].forEach(evt => {
+  window.addEventListener(evt, unlockAmbientOnFirstInteraction, { passive: true });
+});
+
 // ====== GLSL SHADER CHUNKS FOR CYBER/ETHNO SCENE ======
 let darkenMaterial = `
   gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0), globalBloom);
@@ -1426,6 +1491,9 @@ function animateClockHandsReliable() {
 engageBtn.addEventListener("click", () => {
   engageBtn.classList.add("hidden");
 
+  // ခလုတ်နှိပ်ချိန်တွင် background.mp3 မပွင့်သေးပါက သေချာပေါက် ပွင့်လာစေရန် နှိုးဆော်ပေးမည်
+  startAmbientBgMusic();
+
   if (forYouVideoEl && typeof forYouVideoEl.play === "function") {
     forYouVideoEl.removeAttribute("muted");
     forYouVideoEl.muted = false;
@@ -1457,6 +1525,11 @@ engageBtn.addEventListener("click", () => {
     photoMatrixWrapper.classList.add("fade-out");
     setTimeout(() => {
       birthdayReveal.classList.add("visible");
+
+      // foryou.mp4 ဗီဒီယို ပွင့်လာချိန်တွင် ဗီဒီယိုအသံကို ကြည်လင်စွာ ကြားရစေရန် background.mp3 ကို အသံခေတ္တတိုးပေးထားမည်
+      if (ambientBgAudio && !ambientMusicStoppedPermanently) {
+        ambientBgAudio.volume = 0.06;
+      }
 
       if (forYouVideoEl) {
         try {
@@ -1490,6 +1563,10 @@ engageBtn.addEventListener("click", () => {
               }
               forYouVideoEl.muted = true;
               forYouVideoEl.volume = 0;
+            }
+            // ဗီဒီယိုပိတ်သွားသည်နှင့် background.mp3 အသံကို မူလအနေတော် (0.35) သို့ ပြန်တင်ပေးမည်
+            if (ambientBgAudio && !ambientMusicStoppedPermanently) {
+              ambientBgAudio.volume = AMBIENT_BG_VOLUME;
             }
             timeMachine.style.display = "none";
           }, 2500);
@@ -2410,8 +2487,6 @@ function updateSongInfo() {
   if (songNameEl) songNameEl.textContent = currentSong.name;
   if (songArtistEl) songArtistEl.textContent = currentSong.artist;
 
-  // အဓိက ပြင်ဆင်ချက်: index.html တွင် src="" ဖြစ်နေပါက getAttribute("src") က "" (empty string) ပြန်ပေးသဖြင့်
-  // ယခင်က !"" ဖြစ်သော်လည်း Browser က webpage URL ကို audio အဖြစ် မှားဖတ်ပြီး Error တက်သွားခြင်းကို တိကျစွာ စစ်ဆေးပြင်ဆင်ထားပါသည်။
   const rawAttr = songEl ? songEl.getAttribute("src") : "";
   if (songEl && (!rawAttr || rawAttr.trim() === "" || !rawAttr.toLowerCase().includes(".mp3"))) {
     songEl.src = currentSong.source;
@@ -2546,11 +2621,13 @@ songEl.addEventListener("ended", () => {
 
 const playSong = () => {
   if (!songEl) return;
+  // song.mp3 စဖွင့်သည်နှင့် background.mp3 ကို သေချာပေါက် ပိတ်သိမ်းထားမည်
+  stopAmbientBgMusicPermanently();
+
   updateSongInfo();
   songEl.muted = false;
   songEl.volume = 1.0;
 
-  // 중요: songEl.load() ကို catch ထဲတွင် ထပ်ခေါ်ပါက Browser User Gesture ပျက်ပြယ်ပြီး သီချင်းရပ်သွားတတ်သဖြင့် တိုက်ရိုက် play() သာ ခေါ်ထားပါသည်
   const playPromise = songEl.play();
   if (playPromise !== undefined) {
     playPromise.then(() => {
@@ -2697,6 +2774,7 @@ function updateProgress() {
 }
 
 window.openFirstWishAndPlayMusic = function() {
+  stopAmbientBgMusicPermanently();
   if (songEl.paused) playSong();
   document.getElementById('music-player-controls').classList.add('visible');
   window.next();
@@ -2879,7 +2957,8 @@ toLoveStoryBtn.addEventListener("click", () => {
   toLoveStoryBtn.classList.add("activating");
   toLoveStoryBtn.textContent = "OPENING WISHES 🎂";
 
-  // ခလုတ်နှိပ်လိုက်သည်နှင့် ./song.mp3 ကို ချက်ချင်း စတင်ဖွင့်ပေးမည်
+  // Galaxy မှ ဆုတောင်းစာသို့ ပြောင်းသည့်ခလုတ်ကို နှိပ်လိုက်သည်နှင့် background.mp3 ကို လုံးဝရပ်တန့်ပြီး ./song.mp3 ကို ဖွင့်ပေးမည်
+  stopAmbientBgMusicPermanently();
   playSong();
   document.getElementById('music-player-controls').classList.add('visible');
 
