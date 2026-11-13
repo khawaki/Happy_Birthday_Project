@@ -1186,18 +1186,55 @@ const galaxyContainer = document.getElementById("galaxy-container");
 const toLoveStoryBtn = document.getElementById("toLoveStoryBtn");
 const loveStoryContainer = document.getElementById("love-story-container");
 
-// Upload လုပ်ပေးထားသော ပုံ (၉) ပုံ (VS Code Project Folder ထဲတွင် ထားရှိရမည့် ပုံအမည်များ)
+// Upload လုပ်ပေးထားသော ပုံ (၉) ပုံ (VS Code နှင့် GitHub Repository ထဲတွင် ထားရှိရမည့် ပုံအမည်များ)
 const uploadedPhotos = [
-  "photo1.jpg",
-  "photo2.jpg",
-  "photo3.jpg",
-  "photo4.jpg",
-  "photo5.jpg",
-  "photo6.jpg",
-  "photo7.jpg",
-  "photo8.jpg",
-  "photo9.jpg"
+  "./photo1.jpg",
+  "./photo2.jpg",
+  "./photo3.jpg",
+  "./photo4.jpg",
+  "./photo5.jpg",
+  "./photo6.jpg",
+  "./photo7.jpg",
+  "./photo8.jpg",
+  "./photo9.jpg"
 ];
+
+// GitHub Pages (Linux Server) တွင် ပုံအမည် သို့မဟုတ် Folder လမ်းကြောင်း လွဲနေပါက အလိုအလျောက် ရှာဖွေပေးမည့် Helper Function
+function attachSmartImageFallback(imgEl, originalSrc, fallbackLabel) {
+  const cleanName = originalSrc.replace(/^\.\//, "");
+  const baseName = cleanName.replace(/\.(jpg|jpeg|png|webp|heic|heif)$/i, "");
+  const numMatch = baseName.match(/\d+/);
+  const num = numMatch ? numMatch[0] : "";
+
+  // GitHub ပေါ်တွင် ဖြစ်နိုင်ခြေရှိသော ပုံနာမည်နှင့် Folder ပုံစံအားလုံးကို အစဉ်လိုက် စမ်းသပ်ရှာဖွေပေးမည်
+  const candidates = [
+    `${baseName}.JPG`,
+    `${baseName}.jpeg`,
+    `${baseName}.JPEG`,
+    `${baseName}.png`,
+    `${baseName}.PNG`,
+    `${baseName}.webp`,
+    `Photo${num}.jpg`,
+    `Photo${num}.JPG`,
+    `photo ${num}.jpg`,
+    `Photo ${num}.jpg`,
+    `${baseName}.jpg.jpg`,
+    `images/${cleanName}`,
+    `img/${cleanName}`,
+    `photos/${cleanName}`,
+    `assets/${cleanName}`
+  ];
+  let tryIndex = 0;
+
+  imgEl.onerror = function() {
+    if (tryIndex < candidates.length) {
+      this.src = candidates[tryIndex++];
+    } else {
+      this.onerror = null;
+      this.src = `https://placehold.co/300x300/1f1711/f2d394?text=${encodeURIComponent(fallbackLabel + " Not Found")}`;
+    }
+  };
+}
 
 // 3x3 ဘောင် ပျောက်သွားပြီးနောက် သီးသန့်ပေါ်လာမည့် ၁၁ စက္ကန့်စာ Video Clip (id="foryou" အတွက် ဗီဒီယိုဖိုင်အမည်)
 const forYouSpecialVideo = "foryou.mp4";
@@ -1356,10 +1393,7 @@ cellConfigs.forEach((cfg, cellIdx) => {
 
     img.src = currentImgSrc;
     img.alt = `Memory Photo ${cellIdx + 1}`;
-    img.onerror = function() {
-      this.onerror = null;
-      this.src = `https://placehold.co/300x300/1f1711/f2d394?text=Photo+${cellIdx + 1}`;
-    };
+    attachSmartImageFallback(img, currentImgSrc, `Photo ${cellIdx + 1}`);
 
     item.appendChild(img);
     track.appendChild(item);
@@ -1801,13 +1835,35 @@ function initGalaxy() {
 
       drawCard(null);
       const img = new Image();
-      img.crossOrigin = 'anonymous';
+      const cleanName = imgSource.replace(/^\.\//, "");
+      const baseName = cleanName.replace(/\.(jpg|jpeg|png|webp|heic|heif)$/i, "");
+      const numMatch = baseName.match(/\d+/);
+      const num = numMatch ? numMatch[0] : "";
+      const candidates = [
+        `${baseName}.JPG`,
+        `${baseName}.jpeg`,
+        `${baseName}.JPEG`,
+        `${baseName}.png`,
+        `${baseName}.PNG`,
+        `${baseName}.webp`,
+        `Photo${num}.jpg`,
+        `Photo${num}.JPG`,
+        `photo ${num}.jpg`,
+        `images/${cleanName}`,
+        `photos/${cleanName}`
+      ];
+      let extIdx = 0;
+
       img.onload = () => drawCard(img);
       img.onerror = () => {
-        const fb = new Image();
-        fb.crossOrigin = 'anonymous';
-        fb.onload = () => drawCard(fb);
-        fb.src = `https://placehold.co/512x640/1e0936/f2d394?text=Memory+${indexLabel}`;
+        if (extIdx < candidates.length) {
+          img.src = candidates[extIdx++];
+        } else {
+          const fb = new Image();
+          fb.crossOrigin = 'anonymous';
+          fb.onload = () => drawCard(fb);
+          fb.src = `https://placehold.co/512x640/1e0936/f2d394?text=Memory+${indexLabel}`;
+        }
       };
       img.src = imgSource;
 
@@ -2524,7 +2580,7 @@ function initMusicPlayerBackground() {
 
   // 2. Initialize Swiper Cover Background
   const swiperEl = document.querySelector("swiper-container");
-  swiperEl.innerHTML = songs.map(song => `<swiper-slide><img src="${song.cover}" onerror="this.src='https://placehold.co/300x300/4a0000/ffd700?text=Cover'"></swiper-slide>`).join("");
+  swiperEl.innerHTML = songs.map(song => `<swiper-slide><img src="${song.cover}" onerror="if(!this.dataset.tried){this.dataset.tried='1';this.src='./photo1.JPG';}else{this.onerror=null;this.src='https://placehold.co/300x300/4a0000/ffd700?text=Cover';}"></swiper-slide>`).join("");
   Object.assign(swiperEl, { initialSlide: currentSongId });
   swiperEl.initialize();
 
@@ -2619,10 +2675,7 @@ function buildPhotoBouquet() {
     const img = document.createElement('img');
     img.src = photoSrc;
     img.alt = `Bouquet Memory ${idx + 1}`;
-    img.onerror = function() {
-      this.onerror = null;
-      this.src = `https://placehold.co/300x360/4a0000/ffd700?text=Bae+Bae+${idx + 1}`;
-    };
+    attachSmartImageFallback(img, photoSrc, `Bae Bae ${idx + 1}`);
 
     stem.appendChild(img);
     bouquetGrid.appendChild(stem);
