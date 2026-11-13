@@ -294,8 +294,6 @@ window.initCyberEthno = function(prewarmOnly = false) {
   let scene = new THREE.Scene();
   let isPortraitMobile = innerWidth < 768 || innerWidth < innerHeight;
   let baseCyberFov = isPortraitMobile ? 54 : 45;
-  // Prewarm လုပ်ထားချိန်ကတည်းက အဝေး FOV (baseCyberFov + 18) ဖြင့် စတင်ထားရှိသောကြောင့်
-  // Cyber Tree ပေါ်လာသည်နှင့် Zoom-out ခုန်ထွက်ခြင်း လုံးဝမရှိဘဲ အဝေးမှ အနီးသို့ တစ်သမတ်တည်း Zoom-in ဆွဲဝင်လာမည်
   let camera = new THREE.PerspectiveCamera(baseCyberFov + 18, innerWidth / innerHeight, 0.1, 2500);
   camera.position.set(-1.25, 2, 5).setLength(isPortraitMobile ? 15.5 : 14);
   let renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: "high-performance"});
